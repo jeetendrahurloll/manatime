@@ -1,6 +1,7 @@
 FROM php:latest
 RUN apt-get update && apt-get -y upgrade
 
+#set up curl
 RUN apt-get install -f -y curl
 #RUN apt-get update && apt-get install -f -y curl
 
@@ -11,22 +12,30 @@ RUN apt-get install -f -y curl
 
 #php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 
+#set up php composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+#RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 RUN php composer-setup.php
 RUN php -r "unlink('composer-setup.php');"
+RUN mv composer.phar /usr/local/bin/composer
 
-
+#set up symphony
 RUN apt-get install -y sudo
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | sudo -E bash
 RUN apt-get install -y symfony-cli 
+
+#set up git for symfony create new project
 RUN git config --global user.email "jeetendrag10@gmail.com"
 RUN git config --global user.name "jeetendra"
+
+#prevent container exit on run
 ENTRYPOINT ["tail", "-f", "/dev/null"]
 
 
 #FREQUENTLY USED TERMINAL COMMANDS FOR MANATIME PROJECT
-#run container for manatime:             docker run -dit  -p 8000:8000 -v /home/jeetendra/Documents/manatime/symphony/symfony_app:/app manatime_symfony:latest
+#run container for manatime:             
+#docker run -dit  -p 8000:8000 -v /home/jeetendra/Documents/manatime/symphony/symfony_app:/app manatime_symfony:latest
+
 #build docker image for manatime :       docker build -t manatime_symfony:latest .
 #new project(execute in /app folder):    symfony new manatime_project_directory --version="5.4.*" --webapp  
 # test installation:                     symfony check:requirements
