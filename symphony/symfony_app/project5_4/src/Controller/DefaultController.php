@@ -13,8 +13,11 @@ class DefaultController extends AbstractController
     #[Route(['/','/index','home'], name: 'app_default')]
     public function index(): Response
     {
+        //$cucon=app.request.attribute.get('_controller');
+        $cucon=__CLASS__;
+
         return $this->render('manatimeTemplates/index.html.twig', [
-            'controller_name' => 'DefaultController',
+            'controller_name' => $cucon,
         ]);
     }
 }

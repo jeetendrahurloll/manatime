@@ -1,6 +1,6 @@
 {% extends 'manatimeTemplates/base.html.twig' %}
 
-{% block title %}index twigControllertitle!{% endblock %}
+{% block title %}Manatime Test Project{% endblock %}
 
 {% block body %}
 <style>
@@ -9,12 +9,31 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>from index{{ controller_name }}! ✅</h1>
+   <!--<h1>Current controller : {#{ controller_name }#}! ✅</h1>-->
+   {#{ app.request.attributes.get("_controller") }#}
 
-    index twig welcome message
+    <h1>Manatime Gestion d'equipement</h1>
+
+
+    <div>Cliquez une option:</div>
+    <!--
     <ul>
-        <li>Your controller at <code><a href="{{ '/app/project5_4/src/Controller/DefaultController.php'|file_link(0) }}">src/Controller/DefaultController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/app/project5_4/templates/default/index.html.twig'|file_link(0) }}">templates/default/index.html.twig</a></code></li>
+        <li>Your controller at <code><a href="{{ '/app/project5_4/src/Controller/DefaultController.php'|file_link(0) }}">kisrc/Controller/DefaultController.php</a></code></li>
+        <li>Your template at <code><a href="{{ '/app/project5_4/templates/default/index.html.twig'|file_link(0) }}">kitemplates/default/index.html.twig</a></code></li>
     </ul>
+    -->
+    
+    
+
+
+    <div><a href="{{path('app_add_equipment')}}">Ajouter un equipement</a></div>
+    <div><a href ="{{path('app_modify_equipment')}}">Modifier un equipement</a></div>
+    <div>Supprimer un equipement</div>
+    <div>Afficher les equipements</div>
+
+
+
+
+
 </div>
 {% endblock %}
