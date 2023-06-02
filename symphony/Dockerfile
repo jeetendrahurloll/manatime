@@ -1,13 +1,16 @@
 FROM ubuntu:latest
+
+#this arg prevents useless interaction that block and crash the dockerfile build. 
+ARG DEBIAN_FRONTEND=noninteractive 
+
 RUN apt-get update && apt-get -y upgrade
 
-#set up curl
-RUN apt-get install -f -y curl
+
 #RUN apt-get update && apt-get install -f -y curl
 
 RUN apt-get install lsb-release ca-certificates apt-transport-https software-properties-common -y
 RUN add-apt-repository -y ppa:ondrej/php
-RUN apt update
+RUN apt-get update
 RUN apt-get install -y php
 
 #php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -18,6 +21,10 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 RUN php composer-setup.php
 RUN php -r "unlink('composer-setup.php');"
 RUN mv composer.phar /usr/local/bin/composer
+
+
+#set up curl
+RUN apt-get install -f -y curl
 
 #set up symphony
 RUN apt-get install -y sudo
