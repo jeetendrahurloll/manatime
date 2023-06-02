@@ -1,14 +1,14 @@
-FROM php:latest
+FROM ubuntu:latest
 RUN apt-get update && apt-get -y upgrade
 
 #set up curl
 RUN apt-get install -f -y curl
 #RUN apt-get update && apt-get install -f -y curl
 
-#RUN apt-get install lsb-release ca-certificates apt-transport-https software-properties-common -y
-#RUN add-apt-repository -y ppa:ondrej/php
-#RUN apt update
-#RUN apt-get install -y php8.1
+RUN apt-get install lsb-release ca-certificates apt-transport-https software-properties-common -y
+RUN add-apt-repository -y ppa:ondrej/php
+RUN apt update
+RUN apt-get install -y php
 
 #php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 
@@ -38,7 +38,7 @@ ENTRYPOINT ["tail", "-f", "/dev/null"]
 
 #build docker image for manatime :       docker build -t manatime_symfony:latest .
 #new project(execute in /app folder):    symfony new manatime_project_directory --version="5.4.*" --webapp  
-# test installation:                     symfony check:requirements
+# test installation:                     symfony check:requirements  #warning does not test if mysql extensions are corectly installed
 #get project info(exe in project folder):php bin/console about
 #start php server(inside container):     symfony server:start
 
