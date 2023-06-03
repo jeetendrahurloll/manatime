@@ -1,19 +1,22 @@
 FROM ubuntu:latest
 
-#this arg prevents useless interaction that block and crash the dockerfile build. 
-ARG DEBIAN_FRONTEND=noninteractive 
-
+#this arg prevents useless interaction that block and crash the dockerfile build. ex php8
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get -y upgrade
 
 
-#RUN apt-get update && apt-get install -f -y curl
-
+#install clean php
 RUN apt-get install lsb-release ca-certificates apt-transport-https software-properties-common -y
 RUN add-apt-repository -y ppa:ondrej/php
 RUN apt-get update
 RUN apt-get install -y php
 
-#php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+#install drivers for mysql ,not mentionned in documentation.
+#No need to comment out php.ini lines enable extension mysqli or pdo_mysql
+#symfony check:requirements will not detect if these are badly installed or missing
+RUN apt-get install -y php-cli php-common php-mysql php-zip php-gd php-mbstring php-curl php-xml php-bcmath
+
+
 
 #set up php composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
