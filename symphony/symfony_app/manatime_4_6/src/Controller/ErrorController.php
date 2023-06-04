@@ -26,7 +26,7 @@ class ErrorController extends AbstractController
         //echo(get_class($exception));
 
         return $this->json([
-            'message' =>  $exception->getMessage()       
+            'messageErrorController' =>  $exception->getMessage()       
         ]);
     }
 }

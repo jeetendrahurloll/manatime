@@ -5,6 +5,8 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ManatimeEquipmentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: ManatimeEquipmentRepository::class)]
 #[ApiResource]      
@@ -16,15 +18,17 @@ class ManatimeEquipment
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $category = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $number = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT,options: ["default" => ""])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
