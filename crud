@@ -1,0 +1,80 @@
+namespace App\Controller;
+
+use App\Entity\User;
+use App\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+
+class UserController extends Controller
+{
+    private UserRepository $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
+    public function index(Request $request)
+    {
+        $users = $this->userRepository->findAll();
+
+        return new JsonResponse($users);
+    }
+
+    public function show(Request $request, int $id)
+    {
+        $user = $this->userRepository->find($id);
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], 404);
+        }
+
+        return new JsonResponse($user);
+    }
+
+    public function create(Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $user = new User();
+        $user->setName($data['name']);
+        $user->setEmail($data['email']);
+
+        $this->userRepository->save($user);
+
+        return new JsonResponse($user);
+    }
+
+    public function update(Request $request, int $id)
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $user = $this->userRepository->find($id);
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], 404);
+        }
+
+        $user->setName($data['name']);
+        $user->setEmail($data['email']);
+
+        $this->userRepository->save($user);
+
+        return new JsonResponse($user);
+    }
+
+    public function delete(Request $request, int $id)
+    {
+        $user = $this->userRepository->find($id);
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], 404);
+        }
+
+        $this->userRepository->delete($user);
+
+        return new JsonResponse(['success' => true]);
+    }
+}
+
