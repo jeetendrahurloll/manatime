@@ -10,6 +10,8 @@ use App\Entity\ManatimeEquipment;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
+use Psr\Log\LoggerInterface;
+
 
 class EquipmentController extends AbstractController
 {
@@ -24,23 +26,35 @@ class EquipmentController extends AbstractController
 
     /**Action to add new equipment */
     #[Route('/equipment/add', name: 'equipment_add', methods: ["POST"])]
-    public function equipmentAdd(ManagerRegistry $doctrine, Request $request, ValidatorInterface $validator): JsonResponse
+    public function equipmentAdd(ManagerRegistry $doctrine, Request $request, ValidatorInterface $validator,LoggerInterface $logger): JsonResponse
     {
-
+        $entityManager = $doctrine->getManager();
 
         $data = json_decode($request->getContent(), true);
         //dd($data);
-        $entityManager = $doctrine->getManager();
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
         }
 
 
+        /**
+         * Error handling strategy:
+         * type errors (NULL or Blank), as defined using #[Assert\NotBlank] in 
+         * ManatimeEquipment Entity are handled locally and give a json response about the values 
+         * that are acceptable.
+         * Full exception message is logged in var/log/dev.log or var/log/prod.log
+         * depending on APP_ENV in .env 
+         * Any other errors give a "An internal error has occured in the server"
+         * and are automatically routed to ErrorController::show
+         * 
+         */
+        $logger->error('wat is happening');
+
         //ORM default validation throws TypeError when value==NULL before validator has chance to check validation constraints
         try {
             $manatimeEquipment = new ManatimeEquipment();
-            $manatimeEquipment->setName("");
+            $manatimeEquipment->setName(NULL);
             $manatimeEquipment->setCategory("test catdfdfegory");
             $manatimeEquipment->setNumber("");
             $manatimeEquipment->setDescription("tesdfdft Description");
@@ -52,11 +66,19 @@ class EquipmentController extends AbstractController
             $errors = $validator->validate($manatimeEquipment);
             if (count($errors) > 0) {
                 $errorsString = (string) $errors; 
-                throw new TypeError('Some values are incorrect or blank.');
+                throw new TypeError($errorsString);
             }
         } catch (\TypeError $e) {
+            $logger->error('Type Exception occured in EquipmentController::equipmentAdd '.$e->getMessage());
+            
             return $this->json([
-                'message' => 'Add equipment failure' . $manatimeEquipment->getId()."  ".$e->getMessage()
+                'message' => 'An error occurred.Some values might be blank or not according to requirements',
+                'name'=>'string,not null ',
+                'category'=>'string,nullable',
+                'number'=>'string,not null',
+                'description'=>'text,not null,empty by default',
+                'createdAt'=>'datetime not null',
+                'updatedAt'=>'datetime nullable'
             ]);
         }
 
