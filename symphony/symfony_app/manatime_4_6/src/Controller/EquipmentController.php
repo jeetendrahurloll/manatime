@@ -28,7 +28,7 @@ class EquipmentController extends AbstractController
     #[Route('/equipment/add', name: 'equipment_add',methods: ["POST"])]
     public function equipmentAdd(ManagerRegistry $doctrine,Request $request,ValidatorInterface $validator): JsonResponse
     {
-        //echo "equipment add echo message"; 
+        echo "equipment add echo message 1838"; 
 
         $data = json_decode($request->getContent(), true);
         //dd($data);
@@ -40,14 +40,23 @@ class EquipmentController extends AbstractController
         }
        
         
-            $manatimeEquipment=new ManatimeEquipment();
-            $manatimeEquipment->setName(NULL);
-            $manatimeEquipment->setCategory("test catdfdfegory");
-            $manatimeEquipment->setNumber("testdfdf number");
-            $manatimeEquipment->setDescription("tesdfdft Description");
-            $manatimeEquipment->setCreatedAt(new \DateTime('@'.strtotime('now')));
-            $manatimeEquipment->setUpdatedAt(new \DateTime('@'.strtotime('now')));
 
+try {
+
+    $manatimeEquipment=new ManatimeEquipment();
+    $manatimeEquipment->setName(NULL);
+    $manatimeEquipment->setCategory("test catdfdfegory");
+    $manatimeEquipment->setNumber(NULL);
+    $manatimeEquipment->setDescription("tesdfdft Description");
+    $manatimeEquipment->setCreatedAt(new \DateTime('@'.strtotime('now')));
+    $manatimeEquipment->setUpdatedAt(new \DateTime('@'.strtotime('now')));
+    
+ } catch (\TypeError $e) {
+    echo "some values are defective".get_class($e);
+    return $this->json([
+        'message' => 'Add equipment failure'.$manatimeEquipment->getId()
+    ]);
+ }
         
        
         //Save to database
