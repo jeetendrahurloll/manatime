@@ -1,0 +1,8 @@
+{
+    "name":"post test name",
+    "category":"post test category",
+    "number":"post test number",
+    "description":"post test Description",
+    "createdAt":"1984-06-05 12:15:30",
+    "updatedAt":"1984-06-05 12:15:30"
+}

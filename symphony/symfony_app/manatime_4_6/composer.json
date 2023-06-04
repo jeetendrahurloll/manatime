@@ -15,7 +15,9 @@
         "symfony/dotenv": "5.4.*",
         "symfony/flex": "^1.17|^2",
         "symfony/framework-bundle": "5.4.*",
+        "symfony/maker-bundle": "^1.48",
         "symfony/runtime": "5.4.*",
+        "symfony/validator": "5.4.*",
         "symfony/yaml": "5.4.*"
     },
     "config": {
@@ -67,8 +69,5 @@
             "require": "5.4.*",
             "docker": false
         }
-    },
-    "require-dev": {
-        "symfony/maker-bundle": "^1.48"
     }
 }

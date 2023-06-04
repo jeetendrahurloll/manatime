@@ -51,6 +51,9 @@ ENTRYPOINT ["tail", "-f", "/dev/null"]
 # test installation:                     symfony check:requirements  #warning does not test if mysql extensions are corectly installed
 #get project info(exe in project folder):php bin/console about
 #start php server(inside container):     symfony server:start
+#query db directly from symfony         :php bin/console dbal:run-sql 'Select * FROM app.manatime_equipment'
+
+
 
 #Useful links
 #https://symfony.com/doc/current/setup/file_permissions.html   #file permission problems

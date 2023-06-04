@@ -7,6 +7,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\ManatimeEquipment;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+
 
 
 class EquipmentController extends AbstractController
@@ -20,35 +24,37 @@ class EquipmentController extends AbstractController
         ]);
     }
 
-
-    #[Route('/equipment/add', name: 'equipment_add')]
-    public function equipmentAdd(ManagerRegistry $doctrine): JsonResponse
+    /**Action to add new equipment */
+    #[Route('/equipment/add', name: 'equipment_add',methods: ["POST"])]
+    public function equipmentAdd(ManagerRegistry $doctrine,Request $request,ValidatorInterface $validator): JsonResponse
     {
+        //echo "equipment add echo message"; 
+
+        $data = json_decode($request->getContent(), true);
+        //dd($data);
         $entityManager = $doctrine->getManager();
-        /** 
-        $product = new Product();
-        $product->setName('Keyboard');
-        $product->setPrice(1999);
-        $product->setDescription('Ergonomic and stylish!');
-        */
 
-        $manatimeEquipment=new ManatimeEquipment();
-        $manatimeEquipment->setName("test name");
-        $manatimeEquipment->setCategory("test category");
-        $manatimeEquipment->setNumber("test number");
-        $manatimeEquipment->setDescription("test Description");
-        $manatimeEquipment->setCreatedAt(new \DateTime('@'.strtotime('now')));
-        $manatimeEquipment->setUpdatedAt(new \DateTime('@'.strtotime('now')));
+        $parametersAsArray = [];
+        if ($content = $request->getContent()) {
+            $parametersAsArray = json_decode($content, true);
+        }
+       
+        
+            $manatimeEquipment=new ManatimeEquipment();
+            $manatimeEquipment->setName(NULL);
+            $manatimeEquipment->setCategory("test catdfdfegory");
+            $manatimeEquipment->setNumber("testdfdf number");
+            $manatimeEquipment->setDescription("tesdfdft Description");
+            $manatimeEquipment->setCreatedAt(new \DateTime('@'.strtotime('now')));
+            $manatimeEquipment->setUpdatedAt(new \DateTime('@'.strtotime('now')));
 
         
-        // tell Doctrine you want to (eventually) save the Product (no queries yet)
+       
+        //Save to database
         $entityManager->persist($manatimeEquipment);
-
-        // actually executes the queries (i.e. the INSERT query)
         $entityManager->flush();
-
-        //return new Response('Saved new product with id '.$product->getId());
         
+        //Return response
         return $this->json([
             'message' => 'Add equipment'.$manatimeEquipment->getId()
         ]);
