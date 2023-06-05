@@ -39,28 +39,51 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return ManatimeEquipment[] Returns an array of ManatimeEquipment objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    //    /**
+    //     * @return ManatimeEquipment[] Returns an array of ManatimeEquipment objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('m')
+    //            ->andWhere('m.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('m.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
 
-//    public function findOneBySomeField($value): ?ManatimeEquipment
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    //    public function findOneBySomeField($value): ?ManatimeEquipment
+    //    {
+    //        return $this->createQueryBuilder('m')
+    //            ->andWhere('m.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
+
+    public function findByMultipleFields(): array
+    {
+        try {
+            echo "find by multiple fields";
+            $id = 1;
+            $qb = $this->createQueryBuilder('p');
+
+
+            //if (!$includeUnavailableProducts) {
+            //    $qb->andWhere('p.available = TRUE');
+            //}
+
+            $query = $qb->getQuery();
+            
+            //$result = $query->execute();
+            $result = $query->getArrayResult();
+        } catch (\Exception $e) {
+            echo "exception !!!";
+        }
+
+        return $result;
+    }
 }
