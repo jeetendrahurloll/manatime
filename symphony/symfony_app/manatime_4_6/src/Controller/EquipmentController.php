@@ -228,11 +228,17 @@ For the fields
         $content = $request->getContent();
         $parametersAsArray = json_decode($content, true);
 
-        $keys = array_keys($parametersAsArray);
+
+        
+
+        //$keys = array_keys($parametersAsArray);
+
+
+        /*
         if ($parametersAsArray["id"] or !empty($parametersAsArray["id"])) {
 
         }
-
+        */
 
 
 
