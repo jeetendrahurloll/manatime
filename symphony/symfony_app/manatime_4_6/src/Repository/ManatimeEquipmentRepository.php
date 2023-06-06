@@ -157,39 +157,13 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
     {
 
         $conn = $this->getEntityManager()->getConnection();
-
-        //$keys = array_keys($parametersAsArray);
-        //print_r($keys);
-        //print_r($parametersAsArray[$keys[0]]);
-        /*
-        Array
-(
-    [0] => id
-    [1] => name
-    [2] => category
-    [3] => number
-    [4] => description
-    [5] => createdAt
-    [6] => updatedAt
-)
-Array
-(
-    [OrAnd] => _OR
-    [EqLike] => EQUAL
-    [Pattern] => 1
-)
-
-_OR id LIKE %name%
-*/
         /*
         $orAnd=$parametersAsArray[$keys[0]]['OrAnd'];           //SQL OR or AAND
         $column=$keys[0];                                       //id,name,category....   
         $sqlOperator=$parametersAsArray[$keys[0]]['EqLike'];    //EQUAL or LIKE
         $pattern=$parametersAsArray[$keys[0]]['Pattern'];        //input pattern
-
-        $whereClause = $orAnd.' '.$column.' '.$sqlOperator.' '.$pattern;
         */
-        $whereClause = ''; //a string that comprises all the SQL WHERE statements
+        $whereClause = '';                                       //a string that comprises all the SQL WHERE statements
         $sqlOperatorsMap = [
             '_OR' => 'OR',
             '_AND' => 'AND',
@@ -202,14 +176,14 @@ _OR id LIKE %name%
 
 
         echo "1";
-        $whereClauseFragment1 = ""; //where clause for columns
+        $whereClauseFragment1 = "";                                 //where clause for columns
         $first = true;
         foreach (['id', 'name', 'category', 'number', 'description'] as $column) {
             if (!array_key_exists($column, $parametersAsArray)) {
                 continue;
-            } 
+            }
 
-            //$column = $keys[$x];                                       //id,name,category....   
+            //$column = $keys[$x];                                   //id,name,category....   
             $orAnd = $parametersAsArray[$column]['OrAnd'];           //SQL OR or AAND
             $mappedOrAnd = $sqlOperatorsMap[$orAnd];
             $sqlOperator = $parametersAsArray[$column]['EqLike'];    //EQUAL or LIKE
@@ -232,17 +206,17 @@ _OR id LIKE %name%
             $whereClauseFragment1 = $whereClauseFragment1 . ' ' . $mappedOrAnd . '  ' . $column . '  ' . $mappedSqlOperator . '  \'' . $sqlWildcard . $pattern . $sqlWildcard . '\'';
             //echo "-where->  " . $whereClauseFragment1 . "\n";
         }
-        echo "2";
-        $whereClauseFragment2 = ""; //where clause for dates
+
+        $whereClauseFragment2 = "";                                         //where clause for dates
         foreach (['created_at', 'updated_at'] as $column) {
             if (!array_key_exists($column, $parametersAsArray)) {
                 continue;
             }
-            $orAnd = $parametersAsArray[$column]['OrAnd'];           //SQL OR or AAND
+            $orAnd = $parametersAsArray[$column]['OrAnd'];                  //SQL OR or AAND
             $mappedOrAnd = $sqlOperatorsMap[$orAnd];
-            $sqlOperator = $parametersAsArray[$column]['Comparator'];    //EQUAL or LIKE
+            $sqlOperator = $parametersAsArray[$column]['Comparator'];       //EQUAL or LIKE
             $mappedSqlOperator = $sqlOperatorsMap[$sqlOperator];
-            $date = $parametersAsArray[$column]['Date'];        //input pattern
+            $date = $parametersAsArray[$column]['Date'];                    //input pattern
             $sqlWildcard = '%';
 
             if ($first) {
@@ -250,29 +224,92 @@ _OR id LIKE %name%
                 $first = false;
             }
             $whereClauseFragment2 = $whereClauseFragment2 . ' ' . $mappedOrAnd . '  ' . $column . '  ' . $mappedSqlOperator . ' \'' . $date . '\' ';
-            //echo "-where->  " . $whereClauseFragment2 . "\n";
         }
 
         $whereClause = $whereClauseFragment1 . $whereClauseFragment2; //concatenate both fragment of where clauses
-        /*
-        {
-            "id":{"OrAnd":"_OR","EqLike":"EQUAL","Pattern":"1"},
-            "name":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"name"},
-            "category":{"OrAnd":"_OR","EqLike":"EQUAL","Pattern":"cat"},
-            "number":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"pat"},
-            "description":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"jjjj"},
-            "createdAt":{"OrAnd":"_AND","Comparator":"equal","Date":"1984-06-05 09:15:30"},
-            "updatedAt":{"OrAnd":"_OR","Comparator":"less","Date":"1984-06-05 09:15:30"}
-        }
-        */
-        //$sql = "SELECT * FROM manatime_equipment  WHERE name LIKE '%name%' OR category LIKE '%input%' OR number LIKE '%766%' ";
+        echo("funstion where clause:".$this->buildWhereClause($parametersAsArray));
         $sql = "SELECT * FROM manatime_equipment" . $whereClause;
         echo $sql;
 
         $stmt = $conn->prepare($sql);
         $resultSet = $stmt->executeQuery();
+        $result = ['SQL' => $sql, 'result' => $resultSet->fetchAllAssociative()];
 
-        // returns an array of arrays (i.e. a raw data set)
-        return $resultSet->fetchAllAssociative();
+        // returns an array of arrays (i.e. a raw data set) and the executed sql query
+        return $result;
+    }
+
+
+    private function buildWhereClause($parametersAsArray): string
+    {   /*
+        $orAnd=$parametersAsArray[$keys[0]]['OrAnd'];           //SQL OR or AAND
+        $column=$keys[0];                                       //id,name,category....   
+        $sqlOperator=$parametersAsArray[$keys[0]]['EqLike'];    //EQUAL or LIKE
+        $pattern=$parametersAsArray[$keys[0]]['Pattern'];        //input pattern
+        */
+        $whereClause = '';                                       //a string that comprises all the SQL WHERE statements
+        $sqlOperatorsMap = [
+            '_OR' => 'OR',
+            '_AND' => 'AND',
+            'EQUAL' => '=',
+            'LIKE' => 'LIKE',
+            'equal' => '=',
+            'greater' => '>',
+            'less' => '<'
+        ];
+
+
+        echo "1";
+        $whereClauseFragment1 = "";                                 //where clause for columns
+        $first = true;
+        foreach (['id', 'name', 'category', 'number', 'description'] as $column) {
+            if (!array_key_exists($column, $parametersAsArray)) {
+                continue;
+            }
+
+            //$column                                                //id,name,category....   
+            $orAnd = $parametersAsArray[$column]['OrAnd'];           //SQL OR or AAND
+            $mappedOrAnd = $sqlOperatorsMap[$orAnd];
+            $sqlOperator = $parametersAsArray[$column]['EqLike'];    //EQUAL or LIKE
+            $mappedSqlOperator = $sqlOperatorsMap[$sqlOperator];
+            $pattern = $parametersAsArray[$column]['Pattern'];        //input pattern
+            $sqlWildcard = '%';
+
+            if ($sqlOperator == 'EQUAL') {
+                $sqlWildcard = '';
+            } else {
+                $sqlWildcard = '%';
+            }
+
+            //remove first OR or AND stament in where clause            
+            if ($first) {
+                $mappedOrAnd = "WHERE";
+                $first = false;
+            }
+
+            $whereClauseFragment1 = $whereClauseFragment1 . ' ' . $mappedOrAnd . '  ' . $column . '  ' . $mappedSqlOperator . '  \'' . $sqlWildcard . $pattern . $sqlWildcard . '\'';
+        }
+
+        $whereClauseFragment2 = "";                                         //where clause for dates
+        foreach (['created_at', 'updated_at'] as $column) {
+            if (!array_key_exists($column, $parametersAsArray)) {
+                continue;
+            }
+            $orAnd = $parametersAsArray[$column]['OrAnd'];                  //SQL OR or AAND
+            $mappedOrAnd = $sqlOperatorsMap[$orAnd];
+            $sqlOperator = $parametersAsArray[$column]['Comparator'];       //EQUAL or LIKE
+            $mappedSqlOperator = $sqlOperatorsMap[$sqlOperator];
+            $date = $parametersAsArray[$column]['Date'];                    //input pattern
+            $sqlWildcard = '%';
+
+            if ($first) {
+                $mappedOrAnd = "WHERE";
+                $first = false;
+            }
+            $whereClauseFragment2 = $whereClauseFragment2 . ' ' . $mappedOrAnd . '  ' . $column . '  ' . $mappedSqlOperator . ' \'' . $date . '\' ';
+        }
+
+        $whereClause = $whereClauseFragment1 . $whereClauseFragment2; //concatenate both fragment of where clauses
+        return $whereClause;
     }
 }

@@ -229,7 +229,7 @@ For the fields
         $parametersAsArray = json_decode($content, true);
 
 
-        
+
 
         //$keys = array_keys($parametersAsArray);
 
@@ -328,20 +328,11 @@ For the fields
 
         $result = [];
         if ($repository) {
-            // echo "repo ready";
             $result = $repository->findByMultipleFields($parametersAsArray);
-            //print("<pre>".print_r($result,true)."</pre>");
             $messageResult = [
                 'message' => $result
             ];
-            //print("<pre>".print_r($messageResult,true)."</pre>");
-            //json_encode($arr);
-
         }
-        //print("<pre>".print_r($result,true)."</pre>");
-
-
-
         return $this->json($messageResult);
     }
 }
