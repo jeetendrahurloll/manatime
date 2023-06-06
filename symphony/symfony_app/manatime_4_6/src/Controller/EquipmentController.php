@@ -186,25 +186,27 @@ class EquipmentController extends AbstractController
 
     /**Action to search equipment */
     /**Search strategy
-{
-    "id":{"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "name":{"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "category":{"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "number":{"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "description":{"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "createdAt":{"OrAnd":"or","Comparator":"equal|greater|less","Date":"date"},
-    "updatedAt":{"OrAnd":"or","Comparator":"equal|greater|less","Date":"date"}
-}
+
 
 Sample POST query BODY:
 {
-    "id":{"OrAnd":"_OR","EqLike":"EQUAL","Pattern":"kj*&*&*&k"},
-    "name":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"jkjk"},
-    "category":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"pat"},
-    "number":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"pat"},
-    "description":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"kjkj"},
-    "createdAt":{"OrAnd":"_OR","Comparator":"greater","Date":"1984-06-05 09:15:30"},
-    "updatedAt":{"OrAnd":"_OR","Comparator":"less","Date":"1984-06-05 09:15:30"}
+    "id":         {"OrAnd":"_OR", "EqLike":"EQUAL","Pattern":"kj*&*&*&k"},
+    "name":       {"OrAnd":"_OR", "EqLike":"LIKE", "Pattern":"jkjk"},
+    "category":   {"OrAnd":"_AND","EqLike":"LIKE", "Pattern":"pat"},
+    "number":     {"OrAnd":"_OR", "EqLike":"LIKE", "Pattern":"pat"},
+    "description":{"OrAnd":"_OR", "EqLike":"LIKE", "Pattern":"kjkj"},
+    "createdAt":  {"OrAnd":"_OR", "Comparator":"greater","Date":"1984-06-05 09:15:30"},
+    "updatedAt":  {"OrAnd":"_OR", "Comparator":"less","Date":"1984-06-05 09:15:30"}
+}
+ Json Template
+{
+    "id":         {"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "name":       {"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "category":   {"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "number":     {"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "description":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "createdAt":  {"OrAnd":"OR|AND","Comparator":"equal|greater|less","Date":"date"},
+    "updatedAt":  {"OrAnd":"OR|AND","Comparator":"equal|greater|less","Date":"date"}
 }
 
 
@@ -228,7 +230,7 @@ For the fields
 
         $keys = array_keys($parametersAsArray);
         if ($parametersAsArray["id"] or !empty($parametersAsArray["id"])) {
-            
+
         }
 
 
@@ -321,7 +323,7 @@ For the fields
         $result = [];
         if ($repository) {
             // echo "repo ready";
-            $result = $repository->findByMultipleFields();
+            $result = $repository->findByMultipleFields($parametersAsArray);
             //print("<pre>".print_r($result,true)."</pre>");
             $messageResult = [
                 'message' => $result

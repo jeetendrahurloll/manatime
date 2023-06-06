@@ -64,25 +64,61 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function findByMultipleFields(): array
+    public function findByMultipleFields($parametersAsArray): array
     {
         try {
             echo "find by multiple fields";
             $id = 7;
-            $qb = $this->createQueryBuilder('p')
+            $qb = $this->createQueryBuilder('p');
+            /*
                 ->andWhere('p.id = :val')
                 ->setParameter('val', $id);
-            //->getQuery()
-            //if (!$includeUnavailableProducts) {
-            //    $qb->andWhere('p.available = TRUE');
-            //}
-            $qb->andWhere('p.number = :number')
-            ->setParameter('number', "");
+            */
+
+            /*
+            $term = "number";
+            $qb->andWhere('p.number LIKE :searchTerm')
+                ->setParameter('searchTerm', '%' . $term . '%');
+            */
+
+            //dynamically Build query for id
+            if ($parametersAsArray["id"]["OrAnd"] == "_OR") {
+                if ($parametersAsArray["id"]["EqLike"] == "LIKE") {
+                    $whereClause = 'p.id LIKE :id';
+                    $parameter='%'.$parametersAsArray["id"]["Pattern"].'%';
+                } else {
+                    $whereClause = 'p.id = :id';
+                    $parameter=$parametersAsArray["id"]["Pattern"];
+
+                }
+                $qb->orWhere($whereClause)
+                    ->setParameter('id', $parameter);
+            } else {
+                if ($parametersAsArray["id"]["EqLike"] == "LIKE") {
+                    $whereClause = 'p.id LIKE :id';
+                    $parameter='%'.$parametersAsArray["id"]["Pattern"].'%';
+
+                } else {
+                    $whereClause = 'p.id = :id';
+                    $parameter=$parametersAsArray["id"]["Pattern"];
+
+                }
+                $qb->andWhere($whereClause)
+                    ->setParameter('id', $parameter);
+            }
+
+            //dynamically Build query for name
+
+
+
+
+
 
 
             $query = $qb->getQuery();
+            //echo $query->getSQL(); 
             $result = $query->getArrayResult();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             echo "exception !!!";
         }
 
