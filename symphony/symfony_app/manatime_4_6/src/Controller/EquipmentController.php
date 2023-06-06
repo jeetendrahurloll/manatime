@@ -187,13 +187,13 @@ class EquipmentController extends AbstractController
     /**Action to search equipment */
     /**Search strategy
 {
-    "id":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","pattern":"pat"},
-    "name":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","pattern":"pat"},
-    "category":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","pattern":"pat"},
-    "number":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","pattern":"pat"},
-    "description":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","pattern":"pat"},
-    "createdAt":{"OrAnd":"or","comparator":"equal|greater|less","date":"date"},
-    "updatedAt":{"OrAnd":"or","comparator":"equal|greater|less","date":"date"}
+    "id":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "name":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "category":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "number":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "description":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "createdAt":{"OrAnd":"or","Comparator":"equal|greater|less","Date":"date"},
+    "updatedAt":{"OrAnd":"or","Comparator":"equal|greater|less","Date":"date"}
 }
 
 Sample POST query BODY:
@@ -218,9 +218,74 @@ For the fields
         $parametersAsArray = json_decode($content, true);
 
         //print("<pre>".print_r($parametersAsArray,true)."</pre>");
-
+        $keys = array_keys($parametersAsArray);
         if ($parametersAsArray["id"] or !empty($parametersAsArray["id"])) {
-            echo "id present   " . $parametersAsArray["id"]["OrAnd"] . "-" . $parametersAsArray["id"]["EqLike"] . "-" . $parametersAsArray["id"]["pattern"];
+            //echo "id present   " . $parametersAsArray["id"]["OrAnd"] . "-" . $parametersAsArray["id"]["EqLike"] . "-" . $parametersAsArray["id"]["pattern"];
+            //echo "array keys";
+            //print_r(array_keys($parametersAsArray));
+        }
+        // for ($x = 1; $x <= 5; $x++) {
+        //     //echo "parametersAsarray is:".$parametersAsArray[$x]." <br>";
+        //     $parametersAsArray[$x];
+
+        // }
+
+        // foreach ($parametersAsArray as $v) {
+        //     //echo "\$a[$i] => $v.\n";
+        //     // $i++;
+        //     echo "foreach    " . $v["OrAnd"] . "  " . $v["EqLike"] . "  " . $v["pattern"] . "\n";
+        // }
+
+
+        $keys = array_keys($parametersAsArray);
+        //$my_arr[$keys[1]] = "not so much bling"; 
+
+
+        //replace with length of array 
+
+        /*
+        for ($x = 0; $x <= 6; $x++) {
+            //     //echo "parametersAsarray is:".$parametersAsArray[$x]." <br>";
+            //     $parametersAsArray[$x];
+
+            echo "   ->>>>>>".array_keys($parametersAsArray[$keys[$x]])[0]."   com  ".strcmp(array_keys($parametersAsArray[$keys[$x]])[0], "OrAnd");
+
+
+            if (strcmp(array_keys($parametersAsArray[$keys[$x]])[0], "OrAnd") !== 0) {
+                echo array_keys($parametersAsArray[$keys[$x]])[0]."    for each column, first parameter key must be 'OrAnd'";
+            }
+            // if (array_keys($parametersAsArray[$keys[$x]])[0] != "OrAnd") {
+            //     echo "for each column, first parameter key must be 'OrAnd'"; 
+            // }
+            //array_keys($parametersAsArray[$keys[$x]])[0] ."\n";
+
+        }
+
+        */
+
+
+
+        //possible  of values of keys in json argument: OrAnd,EqLike,Pattern,Comparator,Date
+        $possibleKeyValues=['OrAnd','EqLike','Pattern','Comparator','Date'];
+        //for each row in search parameter json
+        //Ex:  one row is   "name":{"OrAnd":"or","EqLike":"like","Pattern":"pat"},
+        foreach ($parametersAsArray as $i) {
+
+            //$keys = array_keys($i);
+            //print_r($keys);
+
+            /*for each column key in each row
+            [0] => OriAnd, [1] => EqLike, [2] => pattern
+            */
+            $keys = array_keys($i);
+            foreach ($keys as $j) {                
+                echo("--->".$j);
+                
+            }
+
+            //foreach($parametersAsArray as $i){
+
+            //echo $i[""]
         }
 
         $entityManager = $doctrine->getManager();
@@ -228,14 +293,14 @@ For the fields
 
         $result = [];
         if ($repository) {
-            echo "repo ready";
+            // echo "repo ready";
             $result = $repository->findByMultipleFields();
             //print("<pre>".print_r($result,true)."</pre>");
-           $messageResult= [
+            $messageResult = [
                 'message' => $result
-           ];
-           //print("<pre>".print_r($messageResult,true)."</pre>");
-           //json_encode($arr);
+            ];
+            //print("<pre>".print_r($messageResult,true)."</pre>");
+            //json_encode($arr);
 
         }
         //print("<pre>".print_r($result,true)."</pre>");
