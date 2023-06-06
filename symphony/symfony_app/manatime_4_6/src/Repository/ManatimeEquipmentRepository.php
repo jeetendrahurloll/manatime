@@ -64,16 +64,20 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function findByMultipleFields($parametersAsArray): array
+    public function findByMultipleFields_deprecated($parametersAsArray): array
     {
         try {
-            echo "find by multiple fields";
-            $id = 7;
-            $qb = $this->createQueryBuilder('p');
-            /*
-                ->andWhere('p.id = :val')
-                ->setParameter('val', $id);
-            */
+            //echo "find by multiple fields";
+            $id = 1;
+            $name="name";
+            $category="peripheral";
+            $qb = $this->createQueryBuilder('p')            
+                ->orWhere('p.id = :id')
+                ->setParameter('id', $id)
+                ->orWhere('p.name LIKE :name')
+                ->setParameter('name', '%'.$name.'%')
+                ->orWhere('p.category LIKE :category')
+                ->setParameter('category', '%'.$category.'%');
 
             /*
             $term = "number";
@@ -82,6 +86,7 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
             */
 
             //dynamically Build query for id
+            /*
             if ($parametersAsArray["id"]["OrAnd"] == "_OR") {
                 if ($parametersAsArray["id"]["EqLike"] == "LIKE") {
                     $whereClause = 'p.id LIKE :id';
@@ -106,22 +111,62 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
                 $qb->andWhere($whereClause)
                     ->setParameter('id', $parameter);
             }
-
+            
             //dynamically Build query for name
 
+            if ($parametersAsArray["name"]["OrAnd"] == "_OR") {
+                if ($parametersAsArray["name"]["EqLike"] == "LIKE") {
+                    $whereClause = 'p.name LIKE :name';
+                    $parameter='%'.$parametersAsArray["name"]["Pattern"].'%';
+                } else {
+                    $whereClause = 'p.id = :name';
+                    $parameter=$parametersAsArray["name"]["Pattern"];
 
+                }
+                $qb->orWhere($whereClause)
+                    ->setParameter('name', $parameter);
+            } else {
+                if ($parametersAsArray["name"]["EqLike"] == "LIKE") {
+                    $whereClause = 'p.name LIKE :name';
+                    $parameter='%'.$parametersAsArray["name"]["Pattern"].'%';
 
+                } else {
+                    $whereClause = 'p.name = :name';
+                    $parameter=$parametersAsArray["name"]["Pattern"];
 
+                }
+                $qb->andWhere($whereClause)
+                    ->setParameter('name', $parameter);
+            }
+
+            */
 
 
 
             $query = $qb->getQuery();
-            //echo $query->getSQL(); 
+            echo "{".$query->getSQL()."}";
             $result = $query->getArrayResult();
         } catch (\Throwable $e) {
             echo "exception !!!";
         }
 
         return $result;
+    }
+
+    public function findByMultipleFields($parametersAsArray): array
+    {
+
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = "SELECT * FROM manatime_equipment  WHERE name LIKE '%name%' OR category LIKE '%input%' OR number LIKE '%766%'
+
+        $whereClause='name'.' '.'LIKE',
+            ";
+        $stmt = $conn->prepare($sql);
+        $resultSet = $stmt->executeQuery();
+
+        // returns an array of arrays (i.e. a raw data set)
+        return $resultSet->fetchAllAssociative();
+
     }
 }
