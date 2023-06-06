@@ -200,13 +200,13 @@ Sample POST query BODY:
 }
  Json Template
 {
-    "id":         {"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "name":       {"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "category":   {"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "number":     {"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "description":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "createdAt":  {"OrAnd":"OR|AND","Comparator":"equal|greater|less","Date":"date"},
-    "updatedAt":  {"OrAnd":"OR|AND","Comparator":"equal|greater|less","Date":"date"}
+    "id":         {"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "name":       {"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "category":   {"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "number":     {"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "description":{"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "createdAt":  {"OrAnd":"_OR|_AND","Comparator":"equal|greater|less","Date":"date"},
+    "updatedAt":  {"OrAnd":"_OR|_AND","Comparator":"equal|greater|less","Date":"date"}
 }
 
 
