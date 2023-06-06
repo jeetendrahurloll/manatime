@@ -68,17 +68,19 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
     {
         try {
             echo "find by multiple fields";
-            $id = 1;
-            $qb = $this->createQueryBuilder('p');
-
-
+            $id = 7;
+            $qb = $this->createQueryBuilder('p')
+                ->andWhere('p.id = :val')
+                ->setParameter('val', $id);
+            //->getQuery()
             //if (!$includeUnavailableProducts) {
             //    $qb->andWhere('p.available = TRUE');
             //}
+            $qb->andWhere('p.number = :number')
+            ->setParameter('number', "");
+
 
             $query = $qb->getQuery();
-            
-            //$result = $query->execute();
             $result = $query->getArrayResult();
         } catch (\Exception $e) {
             echo "exception !!!";
