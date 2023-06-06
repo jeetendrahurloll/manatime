@@ -187,16 +187,25 @@ class EquipmentController extends AbstractController
     /**Action to search equipment */
     /**Search strategy
 {
-    "id":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "name":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "category":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "number":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
-    "description":{"OrAnd":"OR|AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "id":{"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "name":{"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "category":{"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "number":{"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
+    "description":{"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
     "createdAt":{"OrAnd":"or","Comparator":"equal|greater|less","Date":"date"},
     "updatedAt":{"OrAnd":"or","Comparator":"equal|greater|less","Date":"date"}
 }
 
 Sample POST query BODY:
+{
+    "id":{"OrAnd":"_OR","EqLike":"EQUAL","Pattern":"kj*&*&*&k"},
+    "name":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"jkjk"},
+    "category":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"pat"},
+    "number":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"pat"},
+    "description":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"kjkj"},
+    "createdAt":{"OrAnd":"_OR","Comparator":"greater","Date":"1984-06-05 09:15:30"},
+    "updatedAt":{"OrAnd":"_OR","Comparator":"less","Date":"1984-06-05 09:15:30"}
+}
 
 
 For the fields 
@@ -217,76 +226,94 @@ For the fields
         $content = $request->getContent();
         $parametersAsArray = json_decode($content, true);
 
-        //print("<pre>".print_r($parametersAsArray,true)."</pre>");
         $keys = array_keys($parametersAsArray);
         if ($parametersAsArray["id"] or !empty($parametersAsArray["id"])) {
-            //echo "id present   " . $parametersAsArray["id"]["OrAnd"] . "-" . $parametersAsArray["id"]["EqLike"] . "-" . $parametersAsArray["id"]["pattern"];
-            //echo "array keys";
-            //print_r(array_keys($parametersAsArray));
-        }
-        // for ($x = 1; $x <= 5; $x++) {
-        //     //echo "parametersAsarray is:".$parametersAsArray[$x]." <br>";
-        //     $parametersAsArray[$x];
-
-        // }
-
-        // foreach ($parametersAsArray as $v) {
-        //     //echo "\$a[$i] => $v.\n";
-        //     // $i++;
-        //     echo "foreach    " . $v["OrAnd"] . "  " . $v["EqLike"] . "  " . $v["pattern"] . "\n";
-        // }
-
-
-        $keys = array_keys($parametersAsArray);
-        //$my_arr[$keys[1]] = "not so much bling"; 
-
-
-        //replace with length of array 
-
-        /*
-        for ($x = 0; $x <= 6; $x++) {
-            //     //echo "parametersAsarray is:".$parametersAsArray[$x]." <br>";
-            //     $parametersAsArray[$x];
-
-            echo "   ->>>>>>".array_keys($parametersAsArray[$keys[$x]])[0]."   com  ".strcmp(array_keys($parametersAsArray[$keys[$x]])[0], "OrAnd");
-
-
-            if (strcmp(array_keys($parametersAsArray[$keys[$x]])[0], "OrAnd") !== 0) {
-                echo array_keys($parametersAsArray[$keys[$x]])[0]."    for each column, first parameter key must be 'OrAnd'";
-            }
-            // if (array_keys($parametersAsArray[$keys[$x]])[0] != "OrAnd") {
-            //     echo "for each column, first parameter key must be 'OrAnd'"; 
-            // }
-            //array_keys($parametersAsArray[$keys[$x]])[0] ."\n";
-
+            
         }
 
-        */
 
 
 
-        //possible  of values of keys in json argument: OrAnd,EqLike,Pattern,Comparator,Date
-        $possibleKeyValues=['OrAnd','EqLike','Pattern','Comparator','Date'];
+
+
+
+
+        //possible keys in json argument: OrAnd,EqLike,Pattern,Comparator,Date
+        $possibleKeyValues = ['OrAnd', 'EqLike', 'Pattern', 'Comparator', 'Date'];
         //for each row in search parameter json
         //Ex:  one row is   "name":{"OrAnd":"or","EqLike":"like","Pattern":"pat"},
         foreach ($parametersAsArray as $i) {
 
-            //$keys = array_keys($i);
-            //print_r($keys);
 
-            /*for each column key in each row
+
+            /**for each column key in each row
             [0] => OriAnd, [1] => EqLike, [2] => pattern
-            */
+             */
             $keys = array_keys($i);
-            foreach ($keys as $j) {                
-                echo("--->".$j);
-                
+            foreach ($keys as $j) {
+                if (!in_array($j, $possibleKeyValues)) {
+                    $messageResult = [
+                        'message' => " Any parameter key must be in list of keys OrAnd,EqLike,Pattern,Date,Comparator.One key is wrongly $j"
+                    ];
+                    return $this->json($messageResult);
+                }
+            }
+        }
+
+        //possible values parameters OR,AND,EQUAL,LIKE,equal,greater,less
+        foreach ($parametersAsArray as $i) {
+            //Check if OrAnd is _OR _AND
+            if (!in_array($i["OrAnd"], ['_OR', '_AND'])) {
+                $messageResult = [
+                    'message' => "OrAnd must be _OR or _AND. " . $i["OrAnd"] . "was supplied instead."
+
+                ];
+                return $this->json($messageResult);
             }
 
-            //foreach($parametersAsArray as $i){
+            //check if EqLike is EQUAL or LIKE
+            if (array_key_exists("EqLike", $i)) {
+                if (!in_array($i["EqLike"], ['EQUAL', 'LIKE'])) {
+                    $messageResult = [
+                        'message' => "EqLike must be EQUAL or LIKE." . $i["EqLike"] . " was supplied instead"
+                    ];
+                    return $this->json($messageResult);
+                }
+            }
 
-            //echo $i[""]
+            //Check if pattern is not empty
+            if (array_key_exists("Pattern", $i)) {
+                if (empty($i["Pattern"])) {
+                    $messageResult = [
+                        'message' => "One of the patterns was empty"
+                    ];
+                    return $this->json($messageResult);
+                }
+            }
+
+            //check if Comparator is equal|greater|less
+            if (array_key_exists("Comparator", $i)) {
+                if (!in_array($i["Comparator"], ['equal', 'greater', 'less'])) {
+                    $messageResult = [
+                        'message' => "Comparator must be equal, greater, or less"
+                    ];
+                    return $this->json($messageResult);
+                }
+            }
+
+            //check if date is a date
+            if (array_key_exists("Date", $i)) {
+                if (\DateTime::createFromFormat('Y-m-d H:i:s', $i["Date"]) == false) {
+                    $messageResult = [
+                        'message' =>  $i["Date"] . " is not a date"
+                    ];
+                    return $this->json($messageResult);
+                }
+            }
         }
+
+
+
 
         $entityManager = $doctrine->getManager();
         $repository = $entityManager->getRepository(ManatimeEquipment::class);
