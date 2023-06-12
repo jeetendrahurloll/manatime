@@ -175,7 +175,6 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
         ];
 
 
-        echo "1";
         $whereClauseFragment1 = "";                                 //where clause for columns
         $first = true;
         foreach (['id', 'name', 'category', 'number', 'description'] as $column) {
@@ -204,7 +203,6 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
             }
 
             $whereClauseFragment1 = $whereClauseFragment1 . ' ' . $mappedOrAnd . '  ' . $column . '  ' . $mappedSqlOperator . '  \'' . $sqlWildcard . $pattern . $sqlWildcard . '\'';
-            //echo "-where->  " . $whereClauseFragment1 . "\n";
         }
 
         $whereClauseFragment2 = "";                                         //where clause for dates
@@ -239,7 +237,7 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
         return $result;
     }
 
-
+    //TODO :transfer to service
     private function buildWhereClause($parametersAsArray): string
     {   /*
         $orAnd=$parametersAsArray[$keys[0]]['OrAnd'];           //SQL OR or AAND

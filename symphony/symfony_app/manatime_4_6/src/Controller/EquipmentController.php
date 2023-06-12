@@ -198,6 +198,21 @@ Sample POST query BODY:
     "createdAt":  {"OrAnd":"_OR", "Comparator":"greater","Date":"1984-06-05 09:15:30"},
     "updatedAt":  {"OrAnd":"_OR", "Comparator":"less","Date":"1984-06-05 09:15:30"}
 }
+
+
+functionning json post body for query:
+    "SQL": "SELECT * FROM manatime_equipment WHERE  id  =  '3' OR  category  LIKE  '%cat%'",
+{
+    //"number":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"pat"},
+    "id":{"OrAnd":"_OR","EqLike":"EQUAL","Pattern":"3"},
+   // "name":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"name"}
+    "category":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"cat"}
+    //"number":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"pat"},
+    //"description":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"jjjj"},
+    //"created_at":{"OrAnd":"_AND","Comparator":"less","Date":"1995-08-05 16:18:30"}
+    //"updated_at":{"OrAnd":"_OR","Comparator":"less","Date":"1995-06-05 19:18:30"}
+}
+
  Json Template
 {
     "id":         {"OrAnd":"_OR|_AND","EqLike":"EQUAL|LIKE","Pattern":"pat"},
@@ -334,5 +349,18 @@ For the fields
             ];
         }
         return $this->json($messageResult);
+    }
+
+
+
+
+
+    #[Route('/equipment/delete', name: 'equipment_delete', methods: ["POST"])]
+    public function equipmentDelete(ManagerRegistry $doctrine, Request $request, LoggerInterface $logger): JsonResponse
+    {
+
+        $entityManager = $doctrine->getManager();
+        $repository = $entityManager->getRepository(ManatimeEquipment::class);
+        return $this->json(['message' => 'nothing yet']);
     }
 }
