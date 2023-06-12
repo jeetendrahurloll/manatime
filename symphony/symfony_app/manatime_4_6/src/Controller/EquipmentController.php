@@ -245,22 +245,6 @@ For the fields
 
 
 
-
-        //$keys = array_keys($parametersAsArray);
-
-
-        /*
-        if ($parametersAsArray["id"] or !empty($parametersAsArray["id"])) {
-
-        }
-        */
-
-
-
-
-
-
-
         //possible keys in json argument: OrAnd,EqLike,Pattern,Comparator,Date
         $possibleKeyValues = ['OrAnd', 'EqLike', 'Pattern', 'Comparator', 'Date'];
         //for each row in search parameter json
@@ -355,12 +339,28 @@ For the fields
 
 
 
-    #[Route('/equipment/delete', name: 'equipment_delete', methods: ["POST"])]
-    public function equipmentDelete(ManagerRegistry $doctrine, Request $request, LoggerInterface $logger): JsonResponse
+    #[Route('/equipment/delete/{id}', name: 'equipment_delete', methods: ["GET"])]
+    public function equipmentDelete(int $id, ManagerRegistry $doctrine, Request $request, LoggerInterface $logger): JsonResponse
     {
+
+       
+
+        echo("id is ".$id );
 
         $entityManager = $doctrine->getManager();
         $repository = $entityManager->getRepository(ManatimeEquipment::class);
-        return $this->json(['message' => 'nothing yet']);
+
+        $result=$repository->findOneBySomeField($id);
+        echo("result ".$result->getName());
+        //echo("result type".get_class($result));
+        //echo("result type ".is_array($result));
+        //$result=['response'=>$result];
+
+        //return $this->json($result);
+        //return new JsonResponse(json_encode($result));
+
+        $result=$repository->remove($result,true);
+        return new JsonResponse(['message'=>$id .'removed']);
+
     }
 }

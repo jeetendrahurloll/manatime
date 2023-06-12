@@ -64,6 +64,26 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
     //        ;
     //    }
 
+
+    /**
+     * Returns 1 entity using that id
+     */
+
+    public function findOneBySomeField($value): ?ManatimeEquipment
+    {
+
+        echo ("repository id ".$value);
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.id = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult();
+            //->getArrayResult();
+    }
+
+
+
+
     public function findByMultipleFields_deprecated($parametersAsArray): array
     {
         try {
@@ -225,7 +245,7 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
         }
 
         $whereClause = $whereClauseFragment1 . $whereClauseFragment2; //concatenate both fragment of where clauses
-        echo("funstion where clause:".$this->buildWhereClause($parametersAsArray));
+        echo ("funstion where clause:" . $this->buildWhereClause($parametersAsArray));
         $sql = "SELECT * FROM manatime_equipment" . $whereClause;
         echo $sql;
 
