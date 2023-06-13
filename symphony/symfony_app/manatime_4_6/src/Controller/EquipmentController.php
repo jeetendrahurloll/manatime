@@ -363,4 +363,14 @@ For the fields
         return new JsonResponse(['message'=>$id .'removed']);
 
     }
+
+
+    #[Route('/equipment/route/{id}', name: 'equipment_route', methods: ["GET"])]
+    public function equipmentRoute(int $id, ManagerRegistry $doctrine, Request $request, LoggerInterface $logger): JsonResponse
+    {
+        
+        return new JsonResponse(['message'=>$id]);
+
+    }
+
 }
