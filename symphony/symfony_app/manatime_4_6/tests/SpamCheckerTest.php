@@ -70,11 +70,16 @@ class SpamCheckerTest extends TestCase
         echo("db url   ".$_ENV["DATABASE_URL"]);
 
         // use the connection here
-        //$sth = $dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('keyboard','input device','hyyhhyh656565','keyboard given to sanjeev','2023-06-13 12:23:45','2023-06-13 13:23:45')");
-        $sth=$dbh->query("DELETE FROM manatime_equipment");
+        $dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('keyboard',           'input device',     'sn656565',    'keyboard given to sanjeev','2023-06-13 12:23:45','2023-06-13 13:23:45')");
+        $dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('mouse',              'input device',     'zx5ggtg5',    'given to Marie jo',        '2023-06-13 13:23:45','2023-06-14 13:23:45')");
+        $dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('screen',             'display device',   'hyy656565',   'damaged unrepairable',     '2023-06-13 14:23:45','2023-06-15 13:23:45')");
+        $dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('laptop',             'input device',     '09809807jh',  'reported malfunc,untested','2023-06-13 15:23:45','2023-06-16 13:23:45')");
+        $dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('removable hard disk','input device',     'hkhjkgyt987', 'damaged by sanjeev',       '2023-06-13 16:23:45','2023-06-17 13:23:45')");
+
+        //$sth=$dbh->query("DELETE FROM manatime_equipment");
 
         // fetch all rows into array, by default PDO::FETCH_BOTH is used
-        $rows = $sth->fetchAll();
+        //$rows = $sth->fetchAll();
     }
 
     public function testAPI(): void
