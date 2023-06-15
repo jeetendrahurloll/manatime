@@ -9,9 +9,10 @@ use PDO;
 
 class SpamCheckerTest extends TestCase
 {
-
-    public static $dbh=null;
-    //private $number = 0;
+    /*
+     *database pdo connection 
+     */
+    public static $dbh = null;
 
     /**
      *@beforeClass
@@ -24,12 +25,11 @@ class SpamCheckerTest extends TestCase
          * Direct connection without symfony is preferred to avoid complications.
          */
 
-         //$DATABASE_URL = "mysql://root:mypswd@172.17.0.3:3306/app?serverVersion=8&charset=utf8mb4";
-         //$parts = parse_url($DATABASE_URL);
-         //print_r($parts); 
-         //echo ("db url   " . $_ENV["DATABASE_URL"]);
+        //$DATABASE_URL = "mysql://root:mypswd@172.17.0.3:3306/app?serverVersion=8&charset=utf8mb4";
+        //$parts = parse_url($DATABASE_URL);
+        //print_r($parts); 
+        //echo ("db url   " . $_ENV["DATABASE_URL"]);
         self::$dbh = new PDO('mysql:host=172.17.0.3;dbname=app', 'root', 'mypswd');
-
     }
 
 
@@ -42,14 +42,14 @@ class SpamCheckerTest extends TestCase
         /**
          * cleanup pdo database connection
          */
-         self::$dbh=null;
+        self::$dbh = null;
     }
 
     /**
      * @before
      */
     public function beforeEachTest(): void
-    {        
+    {
         echo ("\n Before each test \n");
         /**
          * populate database with test data
@@ -59,8 +59,6 @@ class SpamCheckerTest extends TestCase
         self::$dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('screen',             'display device',   'hyy656565',   'damaged unrepairable',     '2023-06-13 14:23:45','2023-06-15 13:23:45')");
         self::$dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('laptop',             'input device',     '09809807jh',  'reported malfunc,untested','2023-06-13 15:23:45','2023-06-16 13:23:45')");
         self::$dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('removable hard disk','input device',     'hkhjkgyt987', 'damaged by sanjeev',       '2023-06-13 16:23:45','2023-06-17 13:23:45')");
-
-
     }
 
 
@@ -74,40 +72,55 @@ class SpamCheckerTest extends TestCase
          */
         echo ("\n After each test \n");
         self::$dbh->query("DELETE FROM manatime_equipment");
-
     }
 
 
-    public function testEquipmentRoute3(): void
+
+
+
+    //test the addition of an equipment to database
+    public function testEquipmentAdd(): void
     {
-        //127.0.0.1:8001/equipment/delete/
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',
             'defaults' => [
                 'exceptions' => false
             ]
         ]);
-
-        $nickname = 'ObjectOrienter' . rand(0, 999);
-        $data = array(
-            'nickname' => $nickname,
-            'avatarNumber' => 5,
-            'tagLine' => 'a test dev!'
+        $postData = array(
+            "name" => "someName",
+            "category" => "someCategory",
+            "number" => "someNumber",
+            "description" => "someDescription",
+            "createdAt" => "2023-06-14 21:30:02",
+            "updatedAt" => "2023-06-14 21:30:02"
         );
-        // 1) Create a programmer resource
-        //$response = $client->post('/api/programmers', [
-        //    'body' => json_encode($data)
-        //]);
-        ///equipment/delete/3
-        $response = $client->get('/equipment/route/3');
-        // echo($response);
-        echo ("class  " . get_class($response) . "\n");
+        $response = $client->post('/equipment/add', [
+            'body' => json_encode($postData)
+        ]);
         echo ($response->getBody() . "\n");
-        $this->assertTrue(true);
+
+        $outputData = json_decode($response->getBody());
+        //echo ("current id is " . $outputData->id);
+
+
+        /**
+         * Confirm that 1 record was actually added in the database, and that no errors occured during persisting.
+         * Ex:database connection errors etc.  
+         * Also the fields that were saved must be the same as the post data.      
+         */
+        $sql = "SELECT * FROM  manatime_equipment WHERE name='" . $postData["name"] . "' AND category='" . $postData["category"] . "' AND number='" . $postData["number"] . "' AND description='" . $postData["description"] . "' AND created_at='" . $postData["createdAt"] . "' AND updated_at='" . $postData["updatedAt"] . "'";
+
+        $equipmentData = self::$dbh->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+
+        $this->assertIsInt(intval($outputData->id));
+        $this->assertEquals(sizeof($equipmentData), 1);
+        $this->assertEquals($equipmentData[0]["id"], $outputData->id);
+        $this->assertEquals($equipmentData[0]["name"], $postData["name"]);
+        $this->assertEquals($equipmentData[0]["category"], $postData["category"]);
+        $this->assertEquals($equipmentData[0]["number"], $postData["number"]);
+        $this->assertEquals($equipmentData[0]["description"], $postData["description"]);
+        $this->assertEquals($equipmentData[0]["created_at"], $postData["createdAt"]);
+        $this->assertEquals($equipmentData[0]["updated_at"], $postData["updatedAt"]);
     }
-
-
-
-
-    
 }

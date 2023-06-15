@@ -25,7 +25,18 @@ class EquipmentController extends AbstractController
         ]);
     }
 
-    /**Action to add new equipment */
+    /*Action to add new equipment */
+    /*
+    Sample json to post
+    {
+        "name":"someName",
+        "category":"someCategory",
+        "number":"someNumber",
+        "description":"someDescription",
+        "createdAt":"2023-06-14 21:30:02",
+        "updatedAt":"2023-06-14 21:30:02"
+    }
+     */
     #[Route('/equipment/add', name: 'equipment_add', methods: ["POST"])]
     public function equipmentAdd(ManagerRegistry $doctrine, Request $request, ValidatorInterface $validator, LoggerInterface $logger): JsonResponse
     {
@@ -33,13 +44,15 @@ class EquipmentController extends AbstractController
         $parametersAsArray = [];
         $content = $request->getContent();
         $parametersAsArray = json_decode($content, true);
+        try {
 
-        $name = $parametersAsArray["name"];
-        $category = $parametersAsArray["category"];
-        $number = $parametersAsArray["number"];
-        $description = $parametersAsArray["description"];
-        $createdAt = $parametersAsArray["createdAt"];
-        $updatedAt = $parametersAsArray["updatedAt"];
+            $name = $parametersAsArray["name"];
+            $category = $parametersAsArray["category"];
+            $number = $parametersAsArray["number"];
+            $description = $parametersAsArray["description"];
+            $createdAt = $parametersAsArray["createdAt"];
+            $updatedAt = $parametersAsArray["updatedAt"];
+
         /*
         echo("testing parameters as input array");
         echo '<pre>'; print_r($parametersAsArray); echo '</pre>';
@@ -47,19 +60,19 @@ class EquipmentController extends AbstractController
         echo("end of testing");
 
         */
-        /**
-         * Error handling strategy:
-         * type errors (NULL or Blank), as defined using #[Assert\NotBlank] in 
-         * ManatimeEquipment Entity are handled locally and give a json response about the values 
-         * that are acceptable.
-         * Full exception message is logged in var/log/dev.log or var/log/prod.log
-         * depending on APP_ENV in .env 
-         * Any other errors give a "An internal error has occured in the server"
-         * and are automatically routed to ErrorController::show         * 
-         */
+            /**
+             * Error handling strategy:
+             * type errors (NULL or Blank), as defined using #[Assert\NotBlank] in 
+             * ManatimeEquipment Entity are handled locally and give a json response about the values 
+             * that are acceptable.
+             * Full exception message is logged in var/log/dev.log or var/log/prod.log
+             * depending on APP_ENV in .env 
+             * Any other errors give a "An internal error has occured in the server"
+             * and are automatically routed to ErrorController::show         * 
+             */
 
-        //ORM default validation throws TypeError when value==NULL before validator has chance to check validation constraints
-        try {
+            //ORM default validation throws TypeError when value==NULL before validator has chance to check validation constraints
+
 
 
             $manatimeEquipment = new ManatimeEquipment();
@@ -77,8 +90,8 @@ class EquipmentController extends AbstractController
                 $errorsString = (string) $errors;
                 throw new TypeError($errorsString);
             }
-        } catch (\TypeError $e) {
-            $logger->error('Type Exception occured in EquipmentController::equipmentAdd ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            $logger->error('Exception occured in EquipmentController::equipmentAdd ' . $e->getMessage());
 
             return $this->json([
                 'message' => 'An error occurred.Some values might be blank or not according to requirements',
@@ -97,7 +110,8 @@ class EquipmentController extends AbstractController
 
         //Return response
         return $this->json([
-            'message' => 'Add equipment' . $manatimeEquipment->getId()
+            'message' => 'Added equipment',
+            "id" => $manatimeEquipment->getId()
         ]);
     }
 
@@ -343,15 +357,15 @@ For the fields
     public function equipmentDelete(int $id, ManagerRegistry $doctrine, Request $request, LoggerInterface $logger): JsonResponse
     {
 
-       
 
-        echo("id is ".$id );
+
+        echo ("id is " . $id);
 
         $entityManager = $doctrine->getManager();
         $repository = $entityManager->getRepository(ManatimeEquipment::class);
 
-        $result=$repository->findOneBySomeField($id);
-        echo("result ".$result->getName());
+        $result = $repository->findOneBySomeField($id);
+        echo ("result " . $result->getName());
         //echo("result type".get_class($result));
         //echo("result type ".is_array($result));
         //$result=['response'=>$result];
@@ -359,18 +373,15 @@ For the fields
         //return $this->json($result);
         //return new JsonResponse(json_encode($result));
 
-        $result=$repository->remove($result,true);
-        return new JsonResponse(['message'=>$id .'removed']);
-
+        $result = $repository->remove($result, true);
+        return new JsonResponse(['message' => $id . 'removed']);
     }
 
 
     #[Route('/equipment/route/{id}', name: 'equipment_route', methods: ["GET"])]
     public function equipmentRoute(int $id, ManagerRegistry $doctrine, Request $request, LoggerInterface $logger): JsonResponse
     {
-        
-        return new JsonResponse(['message'=>$id]);
 
+        return new JsonResponse(['message' => $id]);
     }
-
 }

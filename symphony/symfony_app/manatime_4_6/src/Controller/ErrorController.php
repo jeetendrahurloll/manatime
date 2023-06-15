@@ -18,7 +18,7 @@ class ErrorController extends AbstractController
         $logger->error('Type Exception occured in EquipmentController::equipmentAdd '.$exception->getMessage());
 
         return $this->json([
-            'messageErrorController' =>  $exception->getMessage()       
+            'messageErrorController' => "an error occurred in the server"      
         ]);
     }
 }
