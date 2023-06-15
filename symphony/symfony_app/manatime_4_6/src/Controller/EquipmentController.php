@@ -124,7 +124,7 @@ class EquipmentController extends AbstractController
         $parametersAsArray = [];
         $content = $request->getContent();
         $parametersAsArray = json_decode($content, true);
-
+        try{
         $id = $parametersAsArray["id"];
         $name = $parametersAsArray["name"];
         $category = $parametersAsArray["category"];
@@ -145,7 +145,7 @@ class EquipmentController extends AbstractController
          */
 
         //ORM default validation throws TypeError when value==NULL before validator has chance to check validation constraints
-        try {
+        
 
 
             $manatimeEquipment = $doctrine->getRepository(ManatimeEquipment::class)->find($id);
@@ -171,7 +171,7 @@ class EquipmentController extends AbstractController
                 $errorsString = (string) $errors;
                 throw new TypeError($errorsString);
             }
-        } catch (\TypeError $e) {
+        } catch (\Throwable $e) {
             $logger->error('Type Exception occured in EquipmentController::equipmentUpdate' . $e->getMessage());
 
             return $this->json([
@@ -192,7 +192,7 @@ class EquipmentController extends AbstractController
 
         //Return response
         return $this->json([
-            'message' => 'Update equipment' . $manatimeEquipment->getId()
+            'message' => 'Updated equipment of id ' . $manatimeEquipment->getId()
         ]);
     }
 

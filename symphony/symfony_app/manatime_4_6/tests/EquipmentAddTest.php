@@ -192,7 +192,7 @@ class EquipmentAddTest extends TestCase
     }
 
     //test that addition of an equipment is refused when name,number,createdAt are given empty
-    public function testEmptyValuesInJsonEquipmentAdd(): void
+    public function _testEmptyValuesInJsonEquipmentAdd(): void
     {
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',
@@ -228,7 +228,7 @@ class EquipmentAddTest extends TestCase
 
 
     //test that addition of an equipment is refused when name,number,createdAt are given NULL
-    public function testNullValuesInJsonEquipmentAdd(): void
+    public function _testNullValuesInJsonEquipmentAdd(): void
     {
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',

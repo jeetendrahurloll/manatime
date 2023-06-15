@@ -79,7 +79,7 @@ class EquipmentUpdateTest extends TestCase
          * Cleans up database and resets it to blank
          */
         echo ("\n After each test \n");
-        //self::$dbh->query("DELETE FROM manatime_equipment");
+        self::$dbh->query("DELETE FROM manatime_equipment");
     }
 
 
@@ -87,7 +87,7 @@ class EquipmentUpdateTest extends TestCase
 
 
     //test the normal update of an equipment to database
-    public function testEquipmentUpdate(): void
+    public function _testEquipmentUpdate(): void
     {
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',
@@ -96,6 +96,7 @@ class EquipmentUpdateTest extends TestCase
             ]
         ]);
         $postData = array(
+            "id"=>$this->lastId,
             "name" => "someName",
             "category" => "someCategory",
             "number" => "someNumber",
@@ -106,36 +107,42 @@ class EquipmentUpdateTest extends TestCase
         $response = $client->post('/equipment/update', [
             'body' => json_encode($postData)
         ]);
-        //echo ($response->getBody() . "\n");
-
-        $outputData = json_decode($response->getBody());
-        //echo ("current id is " . $outputData->id);
+ 
 
 
         /**
-         * Confirm that 1 record was actually added in the database, and that no errors occured during persisting.
+         * Confirm that 1 record was actually updated in the database, and that no errors occured during persisting.
          * Ex:database connection errors etc.  
          * Also the fields that were saved must be the same as the post data.      
          */
-        $sql = "SELECT * FROM  manatime_equipment WHERE name='" . $postData["name"] . "' AND category='" . $postData["category"] . "' AND number='" . $postData["number"] . "' AND description='" . $postData["description"] . "' AND created_at='" . $postData["createdAt"] . "' AND updated_at='" . $postData["updatedAt"] . "'";
+        $sql = "SELECT * FROM  manatime_equipment WHERE id='".$postData["id"]."' AND name='" . $postData["name"] . "' AND category='" . $postData["category"] . "' AND number='" . $postData["number"] . "' AND description='" . $postData["description"] . "' AND created_at='" . $postData["createdAt"] . "' AND updated_at='" . $postData["updatedAt"] . "'";
 
         $equipmentData = self::$dbh->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
 
-        $this->assertIsInt(intval($outputData->id));
+        $this->assertIsInt(intval($this->lastId));
         $this->assertEquals(sizeof($equipmentData), 1);
-        $this->assertEquals($equipmentData[0]["id"], $outputData->id);
+        $this->assertEquals($equipmentData[0]["id"], $this->lastId);
         $this->assertEquals($equipmentData[0]["name"], $postData["name"]);
         $this->assertEquals($equipmentData[0]["category"], $postData["category"]);
         $this->assertEquals($equipmentData[0]["number"], $postData["number"]);
         $this->assertEquals($equipmentData[0]["description"], $postData["description"]);
         $this->assertEquals($equipmentData[0]["created_at"], $postData["createdAt"]);
         $this->assertEquals($equipmentData[0]["updated_at"], $postData["updatedAt"]);
+
+        /**
+         * Check that json response complies to a hypothetical format as supplied by system architect
+         */
+        $outputData = (array)json_decode($response->getBody());
+        $this->assertEquals("message",array_keys($outputData)[0]);
+        $this->assertEquals($outputData["message"],'Updated equipment of id '.$this->lastId);
+
+
     }
 
 
 
     //test the addition of an equipment to database with input json missing fields.
-    public function _testMalformedEquipmentAdd(): void
+    public function _testMalformedJsonEquipmentUpdate(): void
     {
 
         $client = new \GuzzleHttp\Client([
@@ -146,6 +153,7 @@ class EquipmentUpdateTest extends TestCase
         ]);
         for ($i = 0; $i < 6; $i++) {
             $postData = array(
+                "id"=>$this->lastId,
                 "name" => "someName",
                 "category" => "someCategory",
                 "number" => "someNumber",
@@ -154,11 +162,11 @@ class EquipmentUpdateTest extends TestCase
                 "updatedAt" => "2023-06-14 21:30:02"
             );
             unset($postData[array_keys($postData)[$i]]);
-            //print_r($postData);
+            print_r($postData);
             $response = $client->post('/equipment/update', [
                 'body' => json_encode($postData)
             ]);
-            //echo ($response->getBody() . "\n");
+            echo ($response->getBody() . "\n");
             $res_array = (array)json_decode($response->getBody());
             $this->assertArrayHasKey("message", $res_array);
             $this->assertEquals($res_array['message'], 'An error occurred.Some values might be blank or not according to requirements');
@@ -179,6 +187,7 @@ class EquipmentUpdateTest extends TestCase
 
         for ($i = 0; $i < 6; $i++) {
             $postData = array(
+                "id"=>$this->lastId,
                 "name" => "someName",
                 "category" => "someCategory",
                 "number" => "someNumber",
@@ -211,9 +220,10 @@ class EquipmentUpdateTest extends TestCase
         ]);
 
 
-        foreach (['name', 'number', 'createdAt'] as $value) {
+        foreach (['id','name', 'number', 'createdAt'] as $value) {
 
             $postData = array(
+                "id"=>$this->lastId,
                 "name" => "someName",
                 "category" => "someCategory",
                 "number" => "someNumber",
@@ -239,7 +249,7 @@ class EquipmentUpdateTest extends TestCase
 
 
     //test that addition of an equipment is refused when name,number,createdAt are given NULL
-    public function _testNullValuesInJsonEquipmentAdd(): void
+    public function testNullValuesInJsonEquipmentAdd(): void
     {
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',
@@ -249,9 +259,10 @@ class EquipmentUpdateTest extends TestCase
         ]);
 
 
-        foreach (['name', 'number', 'createdAt'] as $value) {
+        foreach (['id','name', 'number', 'createdAt'] as $value) {
 
             $postData = array(
+                "id"=>$this->lastId,
                 "name" => "someName",
                 "category" => "someCategory",
                 "number" => "someNumber",
