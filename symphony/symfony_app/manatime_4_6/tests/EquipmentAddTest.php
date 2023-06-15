@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 use PDO;
 
 
-class SpamCheckerTest extends TestCase
+class EquipmentAddTest extends TestCase
 {
     /*
      *database pdo connection 
@@ -169,10 +169,6 @@ class SpamCheckerTest extends TestCase
             ]
         ]);
 
-
-        
-
-
         for ($i = 0; $i < 6; $i++) {
             $postData = array(
                 "name" => "someName",
@@ -193,6 +189,81 @@ class SpamCheckerTest extends TestCase
             $res_array = (array)json_decode($response->getBody());
             $this->assertArrayHasKey("message", $res_array);
             $this->assertEquals($res_array['message'], 'An error occurred.Some values might be blank or not according to requirements');
+        }
+    }
+
+    //test that addition of an equipment is refused when name,number,createdAt are given empty
+    public function testEmptyValuesInJsonEquipmentAdd(): void
+    {
+        $client = new \GuzzleHttp\Client([
+            'base_uri' => 'http://localhost:8000',
+            'defaults' => [
+                'exceptions' => false
+            ]
+        ]);
+
+
+        foreach (['name', 'number', 'createdAt'] as $value) {
+
+            $postData = array(
+                "name" => "someName",
+                "category" => "someCategory",
+                "number" => "someNumber",
+                "description" => "someDescription",
+                "createdAt" => "2023-06-14 21:30:02",
+                "updatedAt" => "2023-06-14 21:30:02"
+            );
+
+
+
+            $postData[$value] = "";
+
+            $response = $client->post('/equipment/add', [
+                'body' => json_encode($postData)
+            ]);
+            echo (json_encode($postData));
+            $res_array = (array)json_decode($response->getBody());
+            $this->assertArrayHasKey("message", $res_array);
+            $this->assertEquals($res_array['message'], 'An error occurred.Some values might be blank or not according to requirements');
+            print_r($res_array);
+        }
+    }
+
+
+    //test that addition of an equipment is refused when name,number,createdAt are given NULL
+    public function testNullValuesInJsonEquipmentAdd(): void
+    {
+        $client = new \GuzzleHttp\Client([
+            'base_uri' => 'http://localhost:8000',
+            'defaults' => [
+                'exceptions' => false
+            ]
+        ]);
+
+
+        foreach (['name', 'number', 'createdAt'] as $value) {
+
+            $postData = array(
+                "name" => "someName",
+                "category" => "someCategory",
+                "number" => "someNumber",
+                "description" => "someDescription",
+                "createdAt" => "2023-06-14 21:30:02",
+                "updatedAt" => "2023-06-14 21:30:02"
+            );
+
+
+
+            $postData[$value] = null;
+
+            $response = $client->post('/equipment/add', [
+                'body' => json_encode($postData)
+            ]);
+            echo (json_encode($postData));
+            $res_array = (array)json_decode($response->getBody());
+            $this->assertArrayHasKey("message", $res_array);
+            $this->assertEquals($res_array['message'], 'An error occurred.Some values might be blank or not according to requirements');
+            print_r($res_array);
         }
     }
 }
