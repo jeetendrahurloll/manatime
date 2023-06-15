@@ -71,7 +71,7 @@ class SpamCheckerTest extends TestCase
          * Cleans up database and resets it to blank
          */
         echo ("\n After each test \n");
-        self::$dbh->query("DELETE FROM manatime_equipment");
+        //self::$dbh->query("DELETE FROM manatime_equipment");
     }
 
 
@@ -98,7 +98,7 @@ class SpamCheckerTest extends TestCase
         $response = $client->post('/equipment/add', [
             'body' => json_encode($postData)
         ]);
-        echo ($response->getBody() . "\n");
+        //echo ($response->getBody() . "\n");
 
         $outputData = json_decode($response->getBody());
         //echo ("current id is " . $outputData->id);
@@ -126,8 +126,8 @@ class SpamCheckerTest extends TestCase
 
 
 
-    //test the addition of an equipment to database with wrong input json
-    public function testMalformedEquipmentAdd(): void
+    //test the addition of an equipment to database with input json missing fields.
+    public function _testMalformedEquipmentAdd(): void
     {
 
         $client = new \GuzzleHttp\Client([
@@ -136,19 +136,63 @@ class SpamCheckerTest extends TestCase
                 'exceptions' => false
             ]
         ]);
-        $postData = array(
-            "name" => "someName",
-            "category" => "someCategory",
-            "number" => "someNumber",
-            "description" => "someDescription",
-            //"createdAt" => "2023-06-14 21:30:02",
-            "updatedAt" => "2023-06-14 21:30:02"
-        );
-        $response = $client->post('/equipment/add', [
-            'body' => json_encode($postData)
-        ]);
-        echo ($response->getBody() . "\n");
-        $this->assertTrue(true);
+        for ($i = 0; $i < 6; $i++) {
+            $postData = array(
+                "name" => "someName",
+                "category" => "someCategory",
+                "number" => "someNumber",
+                "description" => "someDescription",
+                "createdAt" => "2023-06-14 21:30:02",
+                "updatedAt" => "2023-06-14 21:30:02"
+            );
+            unset($postData[array_keys($postData)[$i]]);
+            //print_r($postData);
+            $response = $client->post('/equipment/add', [
+                'body' => json_encode($postData)
+            ]);
+            //echo ($response->getBody() . "\n");
+            $res_array = (array)json_decode($response->getBody());
+            $this->assertArrayHasKey("message", $res_array);
+            $this->assertEquals($res_array['message'], 'An error occurred.Some values might be blank or not according to requirements');
+        }
+    }
 
+
+
+    //test the addition of an equipment to database with input json having bad field keys.
+    public function _testWrongKeysInJsonEquipmentAdd(): void
+    {
+        $client = new \GuzzleHttp\Client([
+            'base_uri' => 'http://localhost:8000',
+            'defaults' => [
+                'exceptions' => false
+            ]
+        ]);
+
+
+        
+
+
+        for ($i = 0; $i < 6; $i++) {
+            $postData = array(
+                "name" => "someName",
+                "category" => "someCategory",
+                "number" => "someNumber",
+                "description" => "someDescription",
+                "createdAt" => "2023-06-14 21:30:02",
+                "updatedAt" => "2023-06-14 21:30:02"
+            );
+            $newKey = array_keys($postData)[$i] . "yay";
+            $postData[$newKey] = $postData[array_keys($postData)[$i]];
+            unset($postData[array_keys($postData)[$i]]);
+            //print_r($postData);
+            $response = $client->post('/equipment/add', [
+                'body' => json_encode($postData)
+            ]);
+            //echo ($response->getBody() . "\n");
+            $res_array = (array)json_decode($response->getBody());
+            $this->assertArrayHasKey("message", $res_array);
+            $this->assertEquals($res_array['message'], 'An error occurred.Some values might be blank or not according to requirements');
+        }
     }
 }
