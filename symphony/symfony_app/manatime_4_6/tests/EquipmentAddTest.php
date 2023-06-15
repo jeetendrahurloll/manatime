@@ -71,7 +71,7 @@ class EquipmentAddTest extends TestCase
          * Cleans up database and resets it to blank
          */
         echo ("\n After each test \n");
-        //self::$dbh->query("DELETE FROM manatime_equipment");
+        self::$dbh->query("DELETE FROM manatime_equipment");
     }
 
 
@@ -98,10 +98,8 @@ class EquipmentAddTest extends TestCase
         $response = $client->post('/equipment/add', [
             'body' => json_encode($postData)
         ]);
-        //echo ($response->getBody() . "\n");
 
         $outputData = json_decode($response->getBody());
-        //echo ("current id is " . $outputData->id);
 
 
         /**
@@ -146,11 +144,9 @@ class EquipmentAddTest extends TestCase
                 "updatedAt" => "2023-06-14 21:30:02"
             );
             unset($postData[array_keys($postData)[$i]]);
-            //print_r($postData);
             $response = $client->post('/equipment/add', [
                 'body' => json_encode($postData)
             ]);
-            //echo ($response->getBody() . "\n");
             $res_array = (array)json_decode($response->getBody());
             $this->assertArrayHasKey("message", $res_array);
             $this->assertEquals($res_array['message'], 'An error occurred.Some values might be blank or not according to requirements');
@@ -178,10 +174,13 @@ class EquipmentAddTest extends TestCase
                 "createdAt" => "2023-06-14 21:30:02",
                 "updatedAt" => "2023-06-14 21:30:02"
             );
+
+            //add any string to the end to corrupt the key, "yay" in this test for example.
             $newKey = array_keys($postData)[$i] . "yay";
             $postData[$newKey] = $postData[array_keys($postData)[$i]];
             unset($postData[array_keys($postData)[$i]]);
-            //print_r($postData);
+
+
             $response = $client->post('/equipment/add', [
                 'body' => json_encode($postData)
             ]);
@@ -221,11 +220,9 @@ class EquipmentAddTest extends TestCase
             $response = $client->post('/equipment/add', [
                 'body' => json_encode($postData)
             ]);
-            echo (json_encode($postData));
             $res_array = (array)json_decode($response->getBody());
             $this->assertArrayHasKey("message", $res_array);
             $this->assertEquals($res_array['message'], 'An error occurred.Some values might be blank or not according to requirements');
-            print_r($res_array);
         }
     }
 
@@ -259,11 +256,9 @@ class EquipmentAddTest extends TestCase
             $response = $client->post('/equipment/add', [
                 'body' => json_encode($postData)
             ]);
-            echo (json_encode($postData));
             $res_array = (array)json_decode($response->getBody());
             $this->assertArrayHasKey("message", $res_array);
             $this->assertEquals($res_array['message'], 'An error occurred.Some values might be blank or not according to requirements');
-            print_r($res_array);
         }
     }
 }
