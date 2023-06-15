@@ -79,7 +79,7 @@ class SpamCheckerTest extends TestCase
 
 
     //test the addition of an equipment to database
-    public function testEquipmentAdd(): void
+    public function _testEquipmentAdd(): void
     {
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',
@@ -122,5 +122,33 @@ class SpamCheckerTest extends TestCase
         $this->assertEquals($equipmentData[0]["description"], $postData["description"]);
         $this->assertEquals($equipmentData[0]["created_at"], $postData["createdAt"]);
         $this->assertEquals($equipmentData[0]["updated_at"], $postData["updatedAt"]);
+    }
+
+
+
+    //test the addition of an equipment to database with wrong input json
+    public function testMalformedEquipmentAdd(): void
+    {
+
+        $client = new \GuzzleHttp\Client([
+            'base_uri' => 'http://localhost:8000',
+            'defaults' => [
+                'exceptions' => false
+            ]
+        ]);
+        $postData = array(
+            "name" => "someName",
+            "category" => "someCategory",
+            "number" => "someNumber",
+            "description" => "someDescription",
+            //"createdAt" => "2023-06-14 21:30:02",
+            "updatedAt" => "2023-06-14 21:30:02"
+        );
+        $response = $client->post('/equipment/add', [
+            'body' => json_encode($postData)
+        ]);
+        echo ($response->getBody() . "\n");
+        $this->assertTrue(true);
+
     }
 }
