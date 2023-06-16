@@ -53,7 +53,7 @@ class EquipmentController extends AbstractController
             $createdAt = $parametersAsArray["createdAt"];
             $updatedAt = $parametersAsArray["updatedAt"];
 
-        /*
+            /*
         echo("testing parameters as input array");
         echo '<pre>'; print_r($parametersAsArray); echo '</pre>';
 
@@ -124,28 +124,28 @@ class EquipmentController extends AbstractController
         $parametersAsArray = [];
         $content = $request->getContent();
         $parametersAsArray = json_decode($content, true);
-        try{
-        $id = $parametersAsArray["id"];
-        $name = $parametersAsArray["name"];
-        $category = $parametersAsArray["category"];
-        $number = $parametersAsArray["number"];
-        $description = $parametersAsArray["description"];
-        $createdAt = $parametersAsArray["createdAt"];
-        $updatedAt = $parametersAsArray["updatedAt"];
+        try {
+            $id = $parametersAsArray["id"];
+            $name = $parametersAsArray["name"];
+            $category = $parametersAsArray["category"];
+            $number = $parametersAsArray["number"];
+            $description = $parametersAsArray["description"];
+            $createdAt = $parametersAsArray["createdAt"];
+            $updatedAt = $parametersAsArray["updatedAt"];
 
-        /**
-         * Error handling strategy:
-         * type errors (NULL or Blank), as defined using #[Assert\NotBlank] in 
-         * ManatimeEquipment Entity are handled locally and give a json response about the values 
-         * that are acceptable.
-         * Full exception message is logged in var/log/dev.log or var/log/prod.log
-         * depending on APP_ENV in .env 
-         * Any other errors give a "An internal error has occured in the server"
-         * and are automatically routed to ErrorController::show         * 
-         */
+            /**
+             * Error handling strategy:
+             * type errors (NULL or Blank), as defined using #[Assert\NotBlank] in 
+             * ManatimeEquipment Entity are handled locally and give a json response about the values 
+             * that are acceptable.
+             * Full exception message is logged in var/log/dev.log or var/log/prod.log
+             * depending on APP_ENV in .env 
+             * Any other errors give a "An internal error has occured in the server"
+             * and are automatically routed to ErrorController::show         * 
+             */
 
-        //ORM default validation throws TypeError when value==NULL before validator has chance to check validation constraints
-        
+            //ORM default validation throws TypeError when value==NULL before validator has chance to check validation constraints
+
 
 
             $manatimeEquipment = $doctrine->getRepository(ManatimeEquipment::class)->find($id);
@@ -252,12 +252,16 @@ For the fields
     #[Route('/equipment/search', name: 'equipment_search', methods: ["POST"])]
     public function equipmentSearch(ManagerRegistry $doctrine, Request $request, LoggerInterface $logger): JsonResponse
     {
+        //$content= trim(preg_replace('/\s\s+/', ' ', $request->getContent()));
+
+        //return $this->json($content);
 
         $parametersAsArray = [];
-        $content = $request->getContent();
+        $content= trim(preg_replace('/\s\s+/', ' ', $request->getContent()));
+
         $parametersAsArray = json_decode($content, true);
-
-
+        //echo("param as array");
+        //print_r($parametersAsArray);
 
         //possible keys in json argument: OrAnd,EqLike,Pattern,Comparator,Date
         $possibleKeyValues = ['OrAnd', 'EqLike', 'Pattern', 'Comparator', 'Date'];

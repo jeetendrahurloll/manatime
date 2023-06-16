@@ -245,13 +245,13 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
         }
 
         $whereClause = $whereClauseFragment1 . $whereClauseFragment2; //concatenate both fragment of where clauses
-        echo ("funstion where clause:" . $this->buildWhereClause($parametersAsArray));
+        //echo ("funstion where clause:" . $this->buildWhereClause($parametersAsArray));
         $sql = "SELECT * FROM manatime_equipment" . $whereClause;
-        echo $sql;
+        echo $sql."\n";
 
         $stmt = $conn->prepare($sql);
         $resultSet = $stmt->executeQuery();
-        $result = ['SQL' => $sql, 'result' => $resultSet->fetchAllAssociative()];
+        $result = ['result' => $resultSet->fetchAllAssociative()];
 
         // returns an array of arrays (i.e. a raw data set) and the executed sql query
         return $result;
