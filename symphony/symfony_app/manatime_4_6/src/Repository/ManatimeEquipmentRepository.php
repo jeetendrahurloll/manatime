@@ -72,13 +72,13 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
     public function findOneBySomeField($value): ?ManatimeEquipment
     {
 
-        echo ("repository id ".$value);
+        echo ("repository id " . $value);
         return $this->createQueryBuilder('m')
             ->andWhere('m.id = :val')
             ->setParameter('val', $value)
             ->getQuery()
             ->getOneOrNullResult();
-            //->getArrayResult();
+        //->getArrayResult();
     }
 
 
@@ -176,7 +176,6 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
     public function findByMultipleFields($parametersAsArray): array
     {
 
-        $conn = $this->getEntityManager()->getConnection();
         /*
         $orAnd=$parametersAsArray[$keys[0]]['OrAnd'];           //SQL OR or AAND
         $column=$keys[0];                                       //id,name,category....   
@@ -247,14 +246,18 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
         $whereClause = $whereClauseFragment1 . $whereClauseFragment2; //concatenate both fragment of where clauses
         //echo ("funstion where clause:" . $this->buildWhereClause($parametersAsArray));
         $sql = "SELECT * FROM manatime_equipment" . $whereClause;
-        echo $sql."\n";
-
+        //ob_start();
+        echo("something");
+        //$list = ob_get_clean(); // Store buffer AND cleans it
+        //echo $list;
+        $conn = $this->getEntityManager()->getConnection();
         $stmt = $conn->prepare($sql);
-        $resultSet = $stmt->executeQuery();
-        $result = ['result' => $resultSet->fetchAllAssociative()];
+        $resultSet = $stmt->executeQuery()->fetchAllAssociative();
 
-        // returns an array of arrays (i.e. a raw data set) and the executed sql query
-        return $result;
+        return [
+            "sql" => $sql,
+            "result" => $resultSet
+        ];
     }
 
     //TODO :transfer to service
