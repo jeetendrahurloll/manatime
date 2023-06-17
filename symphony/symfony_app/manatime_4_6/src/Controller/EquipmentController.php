@@ -346,11 +346,7 @@ For the fields
         $result = [];
         if ($repository) {
             $result = $repository->findByMultipleFields($parametersAsArray);
-            /*
-            $messageResult = [
-                'message' => $result
-            ];
-            */
+
         }
         return $this->json($result);
     }

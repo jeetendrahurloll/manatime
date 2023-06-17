@@ -183,7 +183,7 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
         $pattern=$parametersAsArray[$keys[0]]['Pattern'];        //input pattern
         */
         $whereClause = '';                                       //a string that comprises all the SQL WHERE statements
-        $sqlOperatorsMap = [
+        $sqlOperatorsMap = [                                      //maps json query operators to proper sql operators
             '_OR' => 'OR',
             '_AND' => 'AND',
             'EQUAL' => '=',
@@ -246,16 +246,11 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
         $whereClause = $whereClauseFragment1 . $whereClauseFragment2; //concatenate both fragment of where clauses
         //echo ("funstion where clause:" . $this->buildWhereClause($parametersAsArray));
         $sql = "SELECT * FROM manatime_equipment" . $whereClause;
-        //ob_start();
-        echo("something");
-        //$list = ob_get_clean(); // Store buffer AND cleans it
-        //echo $list;
         $conn = $this->getEntityManager()->getConnection();
         $stmt = $conn->prepare($sql);
         $resultSet = $stmt->executeQuery()->fetchAllAssociative();
 
-        return [
-            "sql" => $sql,
+        return [            
             "result" => $resultSet
         ];
     }

@@ -54,9 +54,13 @@ class EquipmentSearchTest extends TestCase
     public function beforeEachTest(): void
     {
         echo ("\n Before each test \n");
-        /**
+        /**clean and 
          * populate database with test data
          */
+        //self::$dbh->query("DELETE FROM manatime_equipment");
+        //truncate table DemoTable1888
+        self::$dbh->query("TRUNCATE TABLE manatime_equipment");
+
         self::$dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('keyboard',           'input device',     'sn656565',    'keyboard given to sanjeev','2023-06-13 12:23:45','2023-06-13 13:23:45')");
         self::$dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('mouse',              'input device',     'zx5ggtg5',    'given to Marie jo',        '2023-06-13 13:23:45','2023-06-14 13:23:45')");
         self::$dbh->query("INSERT INTO manatime_equipment (name,category,number,description,created_at,updated_at)VALUES ('screen',             'display device',   'hyy656565',   'damaged unrepairable',     '2023-06-13 14:23:45','2023-06-15 13:23:45')");
@@ -79,7 +83,7 @@ class EquipmentSearchTest extends TestCase
          * Cleans up database and resets it to blank
          */
         echo ("\n After each test \n");
-        self::$dbh->query("DELETE FROM manatime_equipment");
+        //self::$dbh->query("DELETE FROM manatime_equipment");
     }
 
 
@@ -87,15 +91,20 @@ class EquipmentSearchTest extends TestCase
 
 
     //test the normal search of an equipment to database
-    public function testEquipmentSearch(): void
+    /**
+     * @dataProvider testEquipmentSearchProvider
+     */
+    public function testEquipmentSearch($postDataJson, $expectedResp): void
     {
+        //echo ("provided data" . $a . $b . $c);
+        /*
         $postDataJson = '{
             "name":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"key"},
             "category":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"input"},
             "number":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"pat"}
             
         }';
-
+        */
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',
             'defaults' => [
@@ -107,10 +116,36 @@ class EquipmentSearchTest extends TestCase
         $response = $client->post('/equipment/search', [
             'body' => $postDataJson
         ]);
-        echo("\n-------------1-----------\n");
-        echo (json_encode(json_decode($response->getBody()), JSON_PRETTY_PRINT));
-        echo("\n-------------2-----------\n");
-        $this->assertTrue(true);
+
+        //try to make the strings more comparable by removing white characters and reducing probability of unepredictible differences.
+        $expectedResp = '{"result":[{"id":1,"name":"keyboard","category":"input device","number":"sn656565","description":"keyboard given to sanjeev","created_at":"2023-06-13 12:23:45","updated_at":"2023-06-13 13:23:45"},{"id":2,"name":"mouse","category":"input device","number":"zx5ggtg5","description":"given to Marie jo","created_at":"2023-06-13 13:23:45","updated_at":"2023-06-14 13:23:45"},{"id":4,"name":"laptop","category":"input device","number":"09809807jh","description":"reported malfunc,untested","created_at":"2023-06-13 15:23:45","updated_at":"2023-06-16 13:23:45"},{"id":5,"name":"removable hard disk","category":"input device","number":"hkhjkgyt987","description":"damaged by sanjeev","created_at":"2023-06-13 16:23:45","updated_at":"2023-06-17 13:23:45"}]}';
+        $expectedResp = str_replace(" ", "", $expectedResp);
+
+        $actualResponse = $response->getBody();
+        $actualResponse = str_replace(" ", "", $actualResponse);
+
+
+        //compute Levenshtein difference between 2 strings
+        $lev = levenshtein($expectedResp, $actualResponse);
+        echo ("\nlevenstein " . $lev);
+
+        //assert that there are less than 5 chars of difference between expected and actual response
+        $this->assertLessThan(5, $lev);
+    }
+
+    public function testEquipmentSearchProvider()
+    {
+        return array(
+            [
+            '{
+                "name":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"key"},
+                "category":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"input"},
+                "number":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"pat"}                
+            }',
+                '{"result":[{"id":1,"name":"keyboard","category":"input device","number":"sn656565","description":"keyboard given to sanjeev","created_at":"2023-06-13 12:23:45","updated_at":"2023-06-13 13:23:45"},{"id":2,"name":"mouse","category":"input device","number":"zx5ggtg5","description":"given to Marie jo","created_at":"2023-06-13 13:23:45","updated_at":"2023-06-14 13:23:45"},{"id":4,"name":"laptop","category":"input device","number":"09809807jh","description":"reported malfunc,untested","created_at":"2023-06-13 15:23:45","updated_at":"2023-06-16 13:23:45"},{"id":5,"name":"removable hard disk","category":"input device","number":"hkhjkgyt987","description":"damaged by sanjeev","created_at":"2023-06-13 16:23:45","updated_at":"2023-06-17 13:23:45"}]}'
+            ]
+
+        );
     }
 
 
