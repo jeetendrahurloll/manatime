@@ -90,7 +90,7 @@ class EquipmentSearchTest extends TestCase
     /**
      * @dataProvider EquipmentSearchProvider
      */
-    public function _testEquipmentSearch($postDataJson, $expectedResp): void
+    public function testEquipmentSearch($postDataJson, $expectedResp): void
     {
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',
@@ -109,6 +109,8 @@ class EquipmentSearchTest extends TestCase
         $expectedResp = str_replace(" ", "", $expectedResp);
 
         $actualResponse = $response->getBody();
+        echo ("test the normal search of an equipment to database");
+
         echo ("--------\n" . $actualResponse . "\n-------");
         $actualResponse = str_replace(" ", "", $actualResponse);
 
@@ -161,7 +163,7 @@ class EquipmentSearchTest extends TestCase
      * @dataProvider  malformedJsonEquipmentSearchProvider
      */
     //test the search of an equipment to database with input json missing fields.
-    public function _testMalformedJsonEquipmentSearch($postDataJson, $expectedResp): void
+    public function testMalformedJsonEquipmentSearch($postDataJson, $expectedResp): void
     {
 
 

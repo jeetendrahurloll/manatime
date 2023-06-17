@@ -79,7 +79,7 @@ class EquipmentAddTest extends TestCase
 
 
     //test the addition of an equipment to database
-    public function _testEquipmentAdd(): void
+    public function testEquipmentAdd(): void
     {
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',
@@ -125,7 +125,7 @@ class EquipmentAddTest extends TestCase
 
 
     //test the addition of an equipment to database with input json missing fields.
-    public function _testMalformedEquipmentAdd(): void
+    public function testMalformedEquipmentAdd(): void
     {
 
         $client = new \GuzzleHttp\Client([
@@ -156,7 +156,7 @@ class EquipmentAddTest extends TestCase
 
 
     //test the addition of an equipment to database with input json having bad field keys.
-    public function _testWrongKeysInJsonEquipmentAdd(): void
+    public function testWrongKeysInJsonEquipmentAdd(): void
     {
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',
@@ -192,7 +192,7 @@ class EquipmentAddTest extends TestCase
     }
 
     //test that addition of an equipment is refused when name,number,createdAt are given empty
-    public function _testEmptyValuesInJsonEquipmentAdd(): void
+    public function testEmptyValuesInJsonEquipmentAdd(): void
     {
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',
@@ -228,7 +228,7 @@ class EquipmentAddTest extends TestCase
 
 
     //test that addition of an equipment is refused when name,number,createdAt are given NULL
-    public function _testNullValuesInJsonEquipmentAdd(): void
+    public function testNullValuesInJsonEquipmentAdd(): void
     {
         $client = new \GuzzleHttp\Client([
             'base_uri' => 'http://localhost:8000',
