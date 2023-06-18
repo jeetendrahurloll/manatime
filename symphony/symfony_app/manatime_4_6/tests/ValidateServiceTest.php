@@ -98,8 +98,7 @@ class ValidateServiceTest extends KernelTestCase
 
 
         $actualResponse=$validateService->validateSearchJson($postDataJson)->getContent();
-        //echo($expectedResp);
-        //echo($actualResponse);
+
 
         //try to make the strings more comparable by removing white characters and reducing probability of unepredictible differences.
         //$expectedResp = '{"result":[{"id":1,"name":"keyboard","category":"input device","number":"sn656565","description":"keyboard given to sanjeev","created_at":"2023-06-13 12:23:45","updated_at":"2023-06-13 13:23:45"},{"id":2,"name":"mouse","category":"input device","number":"zx5ggtg5","description":"given to Marie jo","created_at":"2023-06-13 13:23:45","updated_at":"2023-06-14 13:23:45"},{"id":4,"name":"laptop","category":"input device","number":"09809807jh","description":"reported malfunc,untested","created_at":"2023-06-13 15:23:45","updated_at":"2023-06-16 13:23:45"},{"id":5,"name":"removable hard disk","category":"input device","number":"hkhjkgyt987","description":"damaged by sanjeev","created_at":"2023-06-13 16:23:45","updated_at":"2023-06-17 13:23:45"}]}';

@@ -9,7 +9,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Psr\Log\LoggerInterface;
 
 
-
+/**
+ * General purpose Error response for uncaught errors.
+ */
 class ErrorController extends AbstractController
 {
     #[Route('/error', name: 'app_error')]

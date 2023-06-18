@@ -19,8 +19,7 @@ class ValidateService
         $parametersAsArray = [];
 
         $parametersAsArray = json_decode($content, true);
-        //echo("param as array");
-        //print_r($parametersAsArray);
+
 
         //possible keys in json argument: OrAnd,EqLike,Pattern,Comparator,Date
         $possibleKeyValues = ['OrAnd', 'EqLike', 'Pattern', 'Comparator', 'Date'];
@@ -39,7 +38,6 @@ class ValidateService
                     $messageResult = [
                         'message' => " Any parameter key must be in list of keys OrAnd,EqLike,Pattern,Date,Comparator.One key is wrongly $j"
                     ];
-                    //return json_encode($messageResult);
                     return new JsonResponse($messageResult);
                 }
             }
@@ -53,7 +51,6 @@ class ValidateService
                     'message' => "OrAnd must be _OR or _AND. " . $i["OrAnd"] . "was supplied instead."
 
                 ];
-                //return json_encode($messageResult);
                 return new JsonResponse($messageResult);
             }
 
@@ -63,7 +60,6 @@ class ValidateService
                     $messageResult = [
                         'message' => "EqLike must be EQUAL or LIKE." . $i["EqLike"] . " was supplied instead"
                     ];
-                    //return json_encode($messageResult);
                     return new JsonResponse($messageResult);
                 }
             }
@@ -74,7 +70,6 @@ class ValidateService
                     $messageResult = [
                         'message' => "One of the patterns was empty"
                     ];
-                    //return json_encode($messageResult);
                     return new JsonResponse($messageResult);
                 }
             }
@@ -85,7 +80,6 @@ class ValidateService
                     $messageResult = [
                         'message' => "Comparator must be equal, greater, or less"
                     ];
-                    //return json_encode($messageResult);
                     return new JsonResponse($messageResult);
                 }
             }
@@ -97,12 +91,11 @@ class ValidateService
                         'message' =>  $i["Date"] . " is not a date"
                     ];
                     return new JsonResponse($messageResult);
-                    //return json_encode($messageResult);
                 }
             }
         }
 
-
+        //if all ok,return null
         return null;
     }
 }

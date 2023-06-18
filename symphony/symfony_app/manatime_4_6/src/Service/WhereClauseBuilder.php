@@ -17,7 +17,7 @@ class WhereClauseBuilder
         $pattern=$parametersAsArray[$keys[0]]['Pattern'];        //input pattern
         */
         $whereClause = '';                                       //a string that comprises all the SQL WHERE statements
-        $sqlOperatorsMap = [
+        $sqlOperatorsMap = [                                     //this is used to convert json/PHP friendly operators into sql friendly operators
             '_OR' => 'OR',
             '_AND' => 'AND',
             'EQUAL' => '=',
@@ -84,7 +84,7 @@ class WhereClauseBuilder
             $whereClauseFragment2 = $whereClauseFragment2 . ' ' . $mappedOrAnd . '  ' . $column . '  ' . $mappedSqlOperator . ' \'' . $date . '\' ';
         }
 
-        $whereClause = $whereClauseFragment1 . $whereClauseFragment2; //concatenate both fragment of where clauses
+        $whereClause = $whereClauseFragment1 . $whereClauseFragment2; //concatenate both fragment of where clauses into a final where clause
 
         return $whereClause;
     }

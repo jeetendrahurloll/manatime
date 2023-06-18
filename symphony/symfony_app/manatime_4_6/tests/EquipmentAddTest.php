@@ -176,7 +176,6 @@ class EquipmentAddTest extends TestCase
             $response = $client->post('/equipment/add', [
                 'body' => json_encode($postData)
             ]);
-            //echo ($response->getBody() . "\n");
             $res_array = (array)json_decode($response->getBody());
             $this->assertArrayHasKey("message", $res_array);
             $this->assertEquals($res_array['message'], 'An error occurred.Some values might be blank or not according to requirements');

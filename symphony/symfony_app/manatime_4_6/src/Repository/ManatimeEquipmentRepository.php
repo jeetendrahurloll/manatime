@@ -20,10 +20,10 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
 {
     public WhereClauseBuilder $whereClauseBuilder;
 
-    public function __construct(ManagerRegistry $registry,WhereClauseBuilder $whereClauseBuilder)
+    public function __construct(ManagerRegistry $registry, WhereClauseBuilder $whereClauseBuilder)
     {
         parent::__construct($registry, ManatimeEquipment::class);
-        $this->whereClauseBuilder=$whereClauseBuilder;
+        $this->whereClauseBuilder = $whereClauseBuilder;
     }
 
     public function save(ManatimeEquipment $entity, bool $flush = false): void
@@ -44,7 +44,7 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
         }
     }
 
-     
+
 
 
     /**
@@ -71,8 +71,8 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
      */
     public function findByMultipleFields($parametersAsArray): array
     {
-        
-        $whereClause=$this->whereClauseBuilder->buildWhereClause($parametersAsArray);
+
+        $whereClause = $this->whereClauseBuilder->buildWhereClause($parametersAsArray);
 
         $sql = "SELECT * FROM manatime_equipment" . $whereClause;
         $conn = $this->getEntityManager()->getConnection();
@@ -83,8 +83,4 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
             "result" => $resultSet
         ];
     }
-
-
-
-    
 }

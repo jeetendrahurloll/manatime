@@ -232,7 +232,6 @@ class EquipmentSearchTest extends TestCase
 
 
 
-    //test the addition of an equipment to database with input json having bad field keys.
     /**
      * @dataProvider  wrongKeysJsonEquipmentSearchProvider
      */

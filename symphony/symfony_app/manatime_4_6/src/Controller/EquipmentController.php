@@ -15,14 +15,8 @@ use App\Service\ValidateService;
 
 class EquipmentController extends AbstractController
 {
-    #[Route('/equipment', name: 'app_equipment')]
-    public function index(ValidateService $validateService): JsonResponse
-    {
-        return $this->json([
-            'message' => 'Welcome to your new equipment controller!',
-            'path' => 'src/Controller/EquipmentController.php',
-        ]);
-    }
+
+
 
     /*Action to add new equipment 
      Sample json to post
@@ -242,24 +236,11 @@ class EquipmentController extends AbstractController
         $entityManager = $doctrine->getManager();
         $repository = $entityManager->getRepository(ManatimeEquipment::class);
         $result = $repository->findOneBySomeField($id);
-        if($result){
+        if ($result) {
             $repository->remove($result, true);
             return new JsonResponse(['message' => $id . ' removed']);
-
-        }
-        else{
+        } else {
             return new JsonResponse(['message' => $id . ' not found']);
-
         }
-        //$result = $repository->remove($result, true);
-        //return new JsonResponse(['message' => $id . ' removed']);
-    }
-
-
-    #[Route('/equipment/route/{id}', name: 'equipment_route', methods: ["GET"])]
-    public function equipmentRoute(int $id, ManagerRegistry $doctrine, Request $request, LoggerInterface $logger): JsonResponse
-    {
-
-        return new JsonResponse(['message' => $id]);
     }
 }
