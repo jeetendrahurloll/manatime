@@ -2,12 +2,15 @@
 
 namespace App\Tests;
 
+use App\Service\ValidateService;
 use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Client;
 use PDO;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 
-class ValidateServiceTest extends TestCase
+
+class ValidateServiceTest extends KernelTestCase
 {
     /*
      *database pdo connection 
@@ -24,7 +27,7 @@ class ValidateServiceTest extends TestCase
      */
     public static function beforeClassFunction(): void
     {
-         /**
+        /**
          * Create a direct database connection.
          * Direct connection without symfony is preferred to avoid complications.
          */
@@ -77,41 +80,79 @@ class ValidateServiceTest extends TestCase
 
 
 
+    /**
+     * Test the ValidateService for validating json input used in search route.
+     */
+ 
 
-
-    //test the deletion of an equipment to database
-    public function testEquipmentDel(): void
+    /**
+     * @dataProvider  malformedJsonValidateProvider
+     */
+    public function testMalformedJsonValidate($postDataJson, $expectedResp): void
     {
-        $client = new \GuzzleHttp\Client([
-            'base_uri' => 'http://localhost:8000',
-            'defaults' => [
-                'exceptions' => false
+        
+        //get validateService instance from dependency container
+        self::bootKernel();
+        $container = static::getContainer();
+        $cval= $container->get(ValidateService::class);
+
+
+        $actualResponse=$cval->validateSearchJson($postDataJson)->getContent();
+        //echo($expectedResp);
+        //echo($actualResponse);
+
+        //try to make the strings more comparable by removing white characters and reducing probability of unepredictible differences.
+        //$expectedResp = '{"result":[{"id":1,"name":"keyboard","category":"input device","number":"sn656565","description":"keyboard given to sanjeev","created_at":"2023-06-13 12:23:45","updated_at":"2023-06-13 13:23:45"},{"id":2,"name":"mouse","category":"input device","number":"zx5ggtg5","description":"given to Marie jo","created_at":"2023-06-13 13:23:45","updated_at":"2023-06-14 13:23:45"},{"id":4,"name":"laptop","category":"input device","number":"09809807jh","description":"reported malfunc,untested","created_at":"2023-06-13 15:23:45","updated_at":"2023-06-16 13:23:45"},{"id":5,"name":"removable hard disk","category":"input device","number":"hkhjkgyt987","description":"damaged by sanjeev","created_at":"2023-06-13 16:23:45","updated_at":"2023-06-17 13:23:45"}]}';
+        $expectedResp = str_replace(" ", "", $expectedResp);
+        $actualResponse = str_replace(" ", "", $actualResponse);
+
+
+        //compute Levenshtein difference between 2 strings
+        $lev = levenshtein($expectedResp, $actualResponse);
+
+        //assert that there are less than 5 chars of difference between expected and actual response
+        $this->assertLessThan(5, $lev);
+    }
+
+
+
+    //data provider for malformedJsonEquipmentSearch    
+    public function malformedJsonValidateProvider()
+    {
+        return array(
+            [
+                '{
+                    "name":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":""},
+                    "category":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"input"},
+                    "number":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"656"}                
+                }',
+                '{"message":"One of the patterns was empty"}'
+            ],
+            [
+                '{
+                    "number":{"OrAnd":"_AND","EqLike":"EQUAL","Pattern":"sn656565"},
+                    "id":{"OrAnd":"_OR","EqLike":"EQUAL","Pattern":"1"},
+                    "name":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"keyboard"},
+                    "category":{"OrAnd":"_OR","EqLike":"","Pattern":"input"},
+                    "description":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"given"},
+                    "created_at":{"OrAnd":"_OR","Comparator":"greater","Date":"1995-08-05 16:18:30"},
+                    "updated_at":{"OrAnd":"_OR","Comparator":"greater","Date":"1995-06-05 19:18:30"}
+                }',
+                '{"message":"EqLike must be EQUAL or LIKE. was supplied instead"}'
+            ],
+            [
+                '{ 
+                    "number":{"OrAnd":"_AND","EqLike":"EQUAL","Pattern":"sn656565"},
+                    "id":{"OrAnd":"_OR","EqLike":"EQUAL","Pattern":"1"},
+                    "name":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"keyboard"},
+                    "category":{"OrAnd":"","EqLike":"","Pattern":"input"},
+                    "description":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"given"},
+                    "created_at":{"OrAnd":"_OR","Comparator":"greater","Date":"1995-08-05 16:18:30"},
+                    "updated_at":{"OrAnd":"_OR","Comparator":"greater","Date":"1995-06-05 19:18:30"}               
+                }',
+                '{"message":"OrAnd must be _OR or _AND. was supplied instead."}'
             ]
-        ]);
-        $postData = array(
-            "name" => "someName",
-            "category" => "someCategory",
-            "number" => "someNumber",
-            "description" => "someDescription",
-            "createdAt" => "2023-06-14 21:30:02",
-            "updatedAt" => "2023-06-14 21:30:02"
+
         );
-        $response = $client->get('/equipment/delete/1');
-
-        $outputData = json_decode($response->getBody());
-
-
-        /**
-         * Confirm that 1 record was actually added in the database, and that no errors occured during persisting.
-         * Ex:database connection errors etc.  
-         * Also the fields that were saved must be the same as the post data.      
-         */
-        $sql = "SELECT * FROM  manatime_equipment WHERE id='1'";
-
-        $equipmentData = self::$dbh->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
-
-
-
-        $this->assertEmpty($equipmentData);
     }
 }
