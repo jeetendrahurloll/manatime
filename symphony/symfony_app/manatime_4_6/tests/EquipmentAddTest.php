@@ -19,16 +19,11 @@ class EquipmentAddTest extends TestCase
      */
     public static function beforeClassFunction(): void
     {
-        echo ("\n Before Class function \n");
         /**
          * Create a direct database connection.
          * Direct connection without symfony is preferred to avoid complications.
          */
 
-        //$DATABASE_URL = "mysql://root:mypswd@172.17.0.3:3306/app?serverVersion=8&charset=utf8mb4";
-        //$parts = parse_url($DATABASE_URL);
-        //print_r($parts); 
-        //echo ("db url   " . $_ENV["DATABASE_URL"]);
         self::$dbh = new PDO('mysql:host=172.17.0.3;dbname=app', 'root', 'mypswd');
     }
 
@@ -38,7 +33,6 @@ class EquipmentAddTest extends TestCase
      */
     public static function afterClassFunction(): void
     {
-        echo ("\n After class function \n");
         /**
          * cleanup pdo database connection
          */
@@ -50,7 +44,6 @@ class EquipmentAddTest extends TestCase
      */
     public function beforeEachTest(): void
     {
-        echo ("\n Before each test \n");
         /**
          * populate database with test data
          */
@@ -70,7 +63,6 @@ class EquipmentAddTest extends TestCase
         /**
          * Cleans up database and resets it to blank
          */
-        echo ("\n After each test \n");
         self::$dbh->query("DELETE FROM manatime_equipment");
     }
 

@@ -128,7 +128,7 @@ class EquipmentController extends AbstractController
             /**
              * Error handling strategy:
              * type errors (NULL or Blank), as defined using #[Assert\NotBlank] in 
-             * ManatimeEquipment Entity are handled locally and give a json response about the values 
+             * ManatimeEquipment Entity, are handled locally and give a json response about the values 
              * that are acceptable.
              * Full exception message is logged in var/log/dev.log or var/log/prod.log
              * depending on APP_ENV in .env 
@@ -242,8 +242,17 @@ class EquipmentController extends AbstractController
         $entityManager = $doctrine->getManager();
         $repository = $entityManager->getRepository(ManatimeEquipment::class);
         $result = $repository->findOneBySomeField($id);
-        $result = $repository->remove($result, true);
-        return new JsonResponse(['message ' => $id . ' removed']);
+        if($result){
+            $repository->remove($result, true);
+            return new JsonResponse(['message' => $id . ' removed']);
+
+        }
+        else{
+            return new JsonResponse(['message' => $id . ' not found']);
+
+        }
+        //$result = $repository->remove($result, true);
+        //return new JsonResponse(['message' => $id . ' removed']);
     }
 
 

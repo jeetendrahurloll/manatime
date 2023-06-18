@@ -54,7 +54,7 @@ class ManatimeEquipmentRepository extends ServiceEntityRepository
     public function findOneBySomeField($value): ?ManatimeEquipment
     {
 
-        echo ("repository id " . $value);
+        //echo ("repository id " . $value);
         return $this->createQueryBuilder('m')
             ->andWhere('m.id = :val')
             ->setParameter('val', $value)

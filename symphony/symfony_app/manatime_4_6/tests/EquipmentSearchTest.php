@@ -26,7 +26,6 @@ class EquipmentSearchTest extends TestCase
      */
     public static function beforeClassFunction(): void
     {
-        echo ("\n Before Class function \n");
         /**
          * Create a direct database connection.
          * Direct connection without symfony is preferred to avoid complications with more packages and configurations of packages.
@@ -41,7 +40,6 @@ class EquipmentSearchTest extends TestCase
      */
     public static function afterClassFunction(): void
     {
-        echo ("\n After class function \n");
         /**
          * cleanup pdo database connection
          */
@@ -53,7 +51,6 @@ class EquipmentSearchTest extends TestCase
      */
     public function beforeEachTest(): void
     {
-        echo ("\n Before each test \n");
         /**clean and 
          * populate database with test data
          */
@@ -78,7 +75,6 @@ class EquipmentSearchTest extends TestCase
         /**
          * Cleans up database and resets it to blank
          */
-        echo ("\n After each test \n");
         //self::$dbh->query("DELETE FROM manatime_equipment");//moved to first line of BeforeEachTest so that data can be inspected from database after test
     }
 
@@ -109,15 +105,12 @@ class EquipmentSearchTest extends TestCase
         $expectedResp = str_replace(" ", "", $expectedResp);
 
         $actualResponse = $response->getBody();
-        echo ("test the normal search of an equipment to database");
 
-        echo ("--------\n" . $actualResponse . "\n-------");
         $actualResponse = str_replace(" ", "", $actualResponse);
 
 
         //compute Levenshtein difference between 2 strings
         $lev = levenshtein($expectedResp, $actualResponse);
-        echo ("\nlevenstein " . $lev);
 
         //assert that there are less than 5 chars of difference between expected and actual response
         $this->assertLessThan(5, $lev);
@@ -184,13 +177,11 @@ class EquipmentSearchTest extends TestCase
         $expectedResp = str_replace(" ", "", $expectedResp);
 
         $actualResponse = $response->getBody();
-        echo ("--------\n" . $actualResponse . "\n-------");
         $actualResponse = str_replace(" ", "", $actualResponse);
 
 
         //compute Levenshtein difference between 2 strings
         $lev = levenshtein($expectedResp, $actualResponse);
-        echo ("\nlevenstein " . $lev);
 
         //assert that there are less than 5 chars of difference between expected and actual response
         $this->assertLessThan(5, $lev);
@@ -266,13 +257,11 @@ class EquipmentSearchTest extends TestCase
         $expectedResp = str_replace(" ", "", $expectedResp);
 
         $actualResponse = $response->getBody();
-        echo ("--------\n" . $actualResponse . "\n-------");
         $actualResponse = str_replace(" ", "", $actualResponse);
 
 
         //compute Levenshtein difference between 2 strings
         $lev = levenshtein($expectedResp, $actualResponse);
-        echo ("\nlevenstein " . $lev);
 
         //assert that there are less than 5 chars of difference between expected and actual response
         $this->assertLessThan(5, $lev);
