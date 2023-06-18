@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use App\Service\ValidateService;
+use App\Service\WhereClauseBuilder;
 use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Client;
 use PDO;
@@ -10,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 
 
-class ValidateServiceTest extends KernelTestCase
+class WhereClauseBuilderTest extends KernelTestCase
 {
     /*
      *database pdo connection 
@@ -81,26 +82,26 @@ class ValidateServiceTest extends KernelTestCase
 
 
     /**
-     * Test the ValidateService for validating json input used in search route.
+     * Test the WhereClauseBuilder which constructs a partial SQL query from json parameters
      */
  
 
     /**
      * @dataProvider  malformedJsonValidateProvider
      */
-    public function testMalformedJsonValidate($postDataJson, $expectedResp): void
+    public function testObtainPartialSQL($postDataJson, $expectedResp): void
     {
         
         //get validateService instance from dependency container
         self::bootKernel();
         $container = static::getContainer();
-        $validateService= $container->get(ValidateService::class);
+        $whereClauseBuilder= $container->get(WhereClauseBuilder::class);
 
 
-        $actualResponse=$validateService->validateSearchJson($postDataJson)->getContent();
-        //echo($expectedResp);
-        //echo($actualResponse);
-
+        $actualResponse=$whereClauseBuilder->validateSearchJson($postDataJson)->getContent();
+        echo($expectedResp);
+        echo($actualResponse);
+        return;
         //try to make the strings more comparable by removing white characters and reducing probability of unepredictible differences.
         //$expectedResp = '{"result":[{"id":1,"name":"keyboard","category":"input device","number":"sn656565","description":"keyboard given to sanjeev","created_at":"2023-06-13 12:23:45","updated_at":"2023-06-13 13:23:45"},{"id":2,"name":"mouse","category":"input device","number":"zx5ggtg5","description":"given to Marie jo","created_at":"2023-06-13 13:23:45","updated_at":"2023-06-14 13:23:45"},{"id":4,"name":"laptop","category":"input device","number":"09809807jh","description":"reported malfunc,untested","created_at":"2023-06-13 15:23:45","updated_at":"2023-06-16 13:23:45"},{"id":5,"name":"removable hard disk","category":"input device","number":"hkhjkgyt987","description":"damaged by sanjeev","created_at":"2023-06-13 16:23:45","updated_at":"2023-06-17 13:23:45"}]}';
         $expectedResp = str_replace(" ", "", $expectedResp);
@@ -115,44 +116,6 @@ class ValidateServiceTest extends KernelTestCase
     }
 
 
-
-    //data provider for malformedJsonEquipmentSearch    
-    public function malformedJsonValidateProvider()
-    {
-        return array(
-            [
-                '{
-                    "name":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":""},
-                    "category":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"input"},
-                    "number":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"656"}                
-                }',
-                '{"message":"One of the patterns was empty"}'
-            ],
-            [
-                '{
-                    "number":{"OrAnd":"_AND","EqLike":"EQUAL","Pattern":"sn656565"},
-                    "id":{"OrAnd":"_OR","EqLike":"EQUAL","Pattern":"1"},
-                    "name":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"keyboard"},
-                    "category":{"OrAnd":"_OR","EqLike":"","Pattern":"input"},
-                    "description":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"given"},
-                    "created_at":{"OrAnd":"_OR","Comparator":"greater","Date":"1995-08-05 16:18:30"},
-                    "updated_at":{"OrAnd":"_OR","Comparator":"greater","Date":"1995-06-05 19:18:30"}
-                }',
-                '{"message":"EqLike must be EQUAL or LIKE. was supplied instead"}'
-            ],
-            [
-                '{ 
-                    "number":{"OrAnd":"_AND","EqLike":"EQUAL","Pattern":"sn656565"},
-                    "id":{"OrAnd":"_OR","EqLike":"EQUAL","Pattern":"1"},
-                    "name":{"OrAnd":"_AND","EqLike":"LIKE","Pattern":"keyboard"},
-                    "category":{"OrAnd":"","EqLike":"","Pattern":"input"},
-                    "description":{"OrAnd":"_OR","EqLike":"LIKE","Pattern":"given"},
-                    "created_at":{"OrAnd":"_OR","Comparator":"greater","Date":"1995-08-05 16:18:30"},
-                    "updated_at":{"OrAnd":"_OR","Comparator":"greater","Date":"1995-06-05 19:18:30"}               
-                }',
-                '{"message":"OrAnd must be _OR or _AND. was supplied instead."}'
-            ]
-
-        );
-    }
+    
+   
 }

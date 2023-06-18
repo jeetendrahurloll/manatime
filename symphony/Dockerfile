@@ -52,8 +52,10 @@ ENTRYPOINT ["tail", "-f", "/dev/null"]
 #get project info(exe in project folder):php bin/console about
 #start php server(inside container):     symfony server:start
 #query db directly from symfony         :php bin/console dbal:run-sql 'Select * FROM app.manatime_equipment'
+#unit test                              :symfony php bin/phpunit
 
 
 
-#Useful links
-#https://symfony.com/doc/current/setup/file_permissions.html   #file permission problems
+
+#linting all php file 
+#find . -type f -name '*.php' -exec php -l {} \; >/dev/null
